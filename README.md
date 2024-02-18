@@ -44,4 +44,4 @@ La Terra è un campo di battaglia, e solo il condottiero più astuto e coraggios
 L'analisi del progetto è stata fatta seguendo diverse fasi:
 * Ho creato degli schizzi su come dovrebbero essere le principali [Interfacce di Gioco](https://github.com/GianfrancoLarocca/OWar/tree/main/InterfacceGioco).
 Queste mi sono state utili per capire più o meno il dominio dell'applicazione.
-* Ho realizzato uno schema SQL per la gestione dei dati ([Schema SQL](https://github.com/GianfrancoLarocca/OWar/tree/main/InterfacceGioco)).
+* Ho realizzato uno schema SQL per la gestione dei dati ([Schema SQL](https://raw.githubusercontent.com/GianfrancoLarocca/OWar/main/sql/OWar-sql-schema.png)).
