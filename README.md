@@ -1,6 +1,6 @@
-# Introduzione
+# Benvenuto in OWar - L'Era della Conquista
 
-## Benvenuto in OWar - L'Era della Conquista
+## Descrizione
 
 Il mondo è sull'orlo di una guerra senza precedenti, e il destino della Terra è nelle tue mani. 
 Entra in OWar, un gioco di strategia militare e conquista globale, dove il tuo obiettivo è plasmare il futuro della civiltà sulla Terra.
