@@ -5,4 +5,5 @@ OWar vuol essere un videogioco strategico per browser, dove i giocatori possono 
 ## Analisi Progetto
 
 Prima cosa è stato creare degli schizzi su come saranno le principali interfacce di gioco.
-<img src="https://github.com/GianfrancoLarocca/OWar/blob/main/InterfacceGioco/0-home.png" width="700" height="900">
+
+[Interfacce di Gioco](https://github.com/GianfrancoLarocca/OWar/tree/main/InterfacceGioco)
