@@ -41,13 +41,21 @@ La Terra è un campo di battaglia, e solo il condottiero più astuto e coraggios
 # Sviluppo
 ## Analisi Progetto
 
-L'analisi del progetto è stata fatta seguendo diverse fasi:
+L'analisi del progetto è stata fatta seguendo due fasi:
 * Ho creato degli schizzi su come dovrebbero essere le principali [Interfacce di Gioco](https://github.com/GianfrancoLarocca/OWar/tree/main/InterfacceGioco).
-Queste mi sono state utili per capire più o meno il dominio dell'applicazione.
+Queste mi sono state utili per capire il dominio dell'applicazione e le funzioni da implementare.
 * Ho realizzato uno schema SQL per la gestione dei dati ([Schema SQL](https://raw.githubusercontent.com/GianfrancoLarocca/OWar/main/sql/OWar-sql-schema.png)).
-* Analisi stack tecnologico:
-  * Linguaggio di programmazione lato back-end: Java.
-  * Framework lato back-end: Spring Boot.
-  * Database: PostgreSQL.
-  * Linguaggio di programmazione lato front-end: TypeScript.
-  * Framework lato front-end: Angular.
+
+## stack tecnologico:
+* Linguaggio di programmazione lato back-end: Java.
+* Framework lato back-end: Spring Boot.
+* Database: PostgreSQL.
+* Linguaggio di programmazione lato front-end: TypeScript.
+* Framework lato front-end: Angular.
+
+## Design Pattern:
+* Model-View-Controller (MVC);
+* Test Driven Development (TDD);
+* Dependency Injection (DI);
+* Singleton;
+* Factory;
