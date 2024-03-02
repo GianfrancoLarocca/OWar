@@ -1,4 +1,4 @@
-package com.giancotsu.OWar;
+package com.giancotsu.owar;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
