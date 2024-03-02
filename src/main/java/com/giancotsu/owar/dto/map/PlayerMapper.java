@@ -5,6 +5,10 @@ import com.giancotsu.owar.entity.Player;
 
 public class PlayerMapper {
 
+    private PlayerMapper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     static Player mapToEntity(PlayerDto playerDto) {
         Player player = new Player();
         player.setId(playerDto.getId());

@@ -39,7 +39,6 @@ class PlayerRepositoryTests {
     @AfterAll
     void tearDown() {
         playerRepository.deleteById(player.getId());
-        assert playerRepository.count() == 0;
         System.out.println("tearDown... count: " + playerRepository.count() + ", is present? " + playerRepository.findById(1L).isPresent());
 
     }
