@@ -12,5 +12,5 @@ public interface PlayerRepository extends PagingAndSortingRepository<Player, Lon
     Optional<Player> findByNickname(String nickname);
 
     @Query(value = "SELECT COUNT(*) FROM player", nativeQuery = true)
-    int PlayerCount();
+    int playerCount();
 }

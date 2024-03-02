@@ -16,7 +16,7 @@ import java.util.Optional;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserRepositoryTests {
+class UserRepositoryTests {
 
     @Autowired
     UserRepository userRepository;
@@ -33,7 +33,7 @@ public class UserRepositoryTests {
     }
 
     @Test
-    public void testFindByEmail() {
+    void testFindByEmail() {
 
         Optional<UserEntity> userTestOptional = userRepository.findByEmail(user.getEmail());
         if (userTestOptional.isPresent()) {
