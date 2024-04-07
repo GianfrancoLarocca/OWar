@@ -1,14 +1,9 @@
 package com.giancotsu.owar.controller;
 
 import com.giancotsu.owar.Service.AuthService;
-import com.giancotsu.owar.dto.auth.AuthRequestDto;
-import com.giancotsu.owar.dto.auth.AuthResponseDto;
-import com.giancotsu.owar.dto.auth.UserRegisterDto;
+import com.giancotsu.owar.dto.auth.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,12 +16,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterDto userDto) {
+    public ResponseEntity<RegisterResponse> register(@RequestBody UserRegisterDto userDto) {
         return authService.register(userDto);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
         return authService.login(authRequestDto);
+    }
+
+    @PostMapping(value = "/account-activation/{email}/{code}")
+    public ResponseEntity<UserActivationMessage> accountActivation(@PathVariable("email") String userEmail, @PathVariable("code") String activationCode) {
+        ActivationToken activationToken = new ActivationToken(userEmail, activationCode);
+        return authService.activeAccount(activationToken);
     }
 }
