@@ -1,4 +1,4 @@
-package com.giancotsu.owar.entity;
+package com.giancotsu.owar.entity.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;

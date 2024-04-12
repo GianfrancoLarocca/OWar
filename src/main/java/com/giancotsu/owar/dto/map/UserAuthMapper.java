@@ -1,9 +1,7 @@
 package com.giancotsu.owar.dto.map;
 
 import com.giancotsu.owar.dto.auth.UserRegisterDto;
-import com.giancotsu.owar.entity.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.giancotsu.owar.entity.user.UserEntity;
 
 public class UserAuthMapper {
 

@@ -1,6 +1,5 @@
-package com.giancotsu.owar.entity;
+package com.giancotsu.owar.entity.user;
 
-import com.giancotsu.owar.entity.user.UserResetPasswordEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

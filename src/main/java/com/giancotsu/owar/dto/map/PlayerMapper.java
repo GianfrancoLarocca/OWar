@@ -1,7 +1,7 @@
 package com.giancotsu.owar.dto.map;
 
 import com.giancotsu.owar.dto.PlayerDto;
-import com.giancotsu.owar.entity.Player;
+import com.giancotsu.owar.entity.player.Player;
 
 public class PlayerMapper {
 

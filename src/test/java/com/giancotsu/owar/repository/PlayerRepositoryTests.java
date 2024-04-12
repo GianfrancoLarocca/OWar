@@ -1,6 +1,6 @@
 package com.giancotsu.owar.repository;
 
-import com.giancotsu.owar.entity.Player;
+import com.giancotsu.owar.entity.player.Player;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

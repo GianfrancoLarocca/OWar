@@ -1,6 +1,5 @@
 package com.giancotsu.owar.entity.user;
 
-import com.giancotsu.owar.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 

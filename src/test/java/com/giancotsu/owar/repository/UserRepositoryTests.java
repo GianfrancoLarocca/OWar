@@ -1,8 +1,8 @@
 package com.giancotsu.owar.repository;
 
 
-import com.giancotsu.owar.entity.Role;
-import com.giancotsu.owar.entity.UserEntity;
+import com.giancotsu.owar.entity.user.Role;
+import com.giancotsu.owar.entity.user.UserEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,8 +11,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;

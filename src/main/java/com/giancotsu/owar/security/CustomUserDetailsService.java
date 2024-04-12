@@ -1,7 +1,7 @@
 package com.giancotsu.owar.security;
 
-import com.giancotsu.owar.entity.Role;
-import com.giancotsu.owar.entity.UserEntity;
+import com.giancotsu.owar.entity.user.Role;
+import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

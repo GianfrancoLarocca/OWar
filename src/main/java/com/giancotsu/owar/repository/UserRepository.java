@@ -1,6 +1,6 @@
 package com.giancotsu.owar.repository;
 
-import com.giancotsu.owar.entity.UserEntity;
+import com.giancotsu.owar.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

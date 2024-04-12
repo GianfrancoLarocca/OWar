@@ -1,6 +1,6 @@
 package com.giancotsu.owar.repository;
 
-import com.giancotsu.owar.entity.Player;
+import com.giancotsu.owar.entity.player.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
