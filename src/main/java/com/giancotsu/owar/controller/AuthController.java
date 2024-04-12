@@ -30,4 +30,14 @@ public class AuthController {
         ActivationToken activationToken = new ActivationToken(userEmail, activationCode);
         return authService.activeAccount(activationToken);
     }
+
+    @PostMapping(value = "reset/password/email/{email}")
+    public ResponseEntity<String> resetPasswordEmail(@PathVariable("email") String userEmail) {
+        return authService.resetPasswordEmail(userEmail);
+    }
+
+    @PostMapping(value = "reset/password/{email}/{code}")
+    public ResponseEntity<String> resetPassword(@PathVariable("email") String email, @PathVariable("code") String secureCode, @RequestBody ResetPasswordDto resetPasswordDto) {
+        return authService.resetPassword(resetPasswordDto, email, secureCode);
+    }
 }

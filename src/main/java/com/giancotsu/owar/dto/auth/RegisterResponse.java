@@ -1,11 +1,18 @@
 package com.giancotsu.owar.dto.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@AllArgsConstructor
 public class RegisterResponse {
 
-    private String message;
+    private List<String> messages;
+
+    public RegisterResponse() {
+    }
+    public RegisterResponse(List<String> messages) {
+        this.messages = messages;
+    }
+
 }

@@ -27,7 +27,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${allowed.origins}")
+    @Value("${frontend.url}")
     private String allowedOrigins;
 
     private final JwtAuthEntryPoint authEntryPoint;
@@ -46,6 +46,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/api/auth/register", HttpMethod.POST.name()).permitAll()
                         .requestMatchers("/api/auth/login", HttpMethod.POST.name()).permitAll()
+                        .requestMatchers("/api/auth/reset/password/email/*", HttpMethod.POST.name()).permitAll()
+                        .requestMatchers("/api/auth/reset/password/*/*", HttpMethod.POST.name()).permitAll()
                         .requestMatchers("/demo/admin", HttpMethod.GET.name()).hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
