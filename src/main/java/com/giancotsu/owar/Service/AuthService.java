@@ -135,7 +135,7 @@ public class AuthService {
         authResponse.setType("Bearer ");
         authResponse.setRole(authentication.getAuthorities().stream().findFirst().get().getAuthority());
         authResponse.setUsername(authentication.getName());
-        authResponse.setExpiration(exp.getTime());
+        authResponse.setExpiration(new Date(exp.getTime()));
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
