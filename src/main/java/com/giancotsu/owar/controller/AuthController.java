@@ -1,6 +1,6 @@
 package com.giancotsu.owar.controller;
 
-import com.giancotsu.owar.Service.AuthService;
+import com.giancotsu.owar.service.AuthService;
 import com.giancotsu.owar.dto.auth.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

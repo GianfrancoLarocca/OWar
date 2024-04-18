@@ -16,14 +16,24 @@ public class UserResetPasswordEntity {
     private String secureCode;
     private Date expirationDate;
 
+    @OneToOne(mappedBy = "resetPasswordEntity")
+    private UserEntity user;
+
     public UserResetPasswordEntity() {
     }
 
     public UserResetPasswordEntity(String secureCode) {
         this.secureCode = secureCode;
-        this.expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
+        this.expirationDate = getExpirationValue();
     }
 
-    @OneToOne(mappedBy = "resetPasswordEntity")
-    private UserEntity user;
+    public void setSecureCode(String secureCode) {
+        this.secureCode = secureCode;
+        this.expirationDate = getExpirationValue();
+    }
+
+    private Date getExpirationValue() {
+        long tempo = 1000 * 60 * 60 * 24L;
+        return new Date(System.currentTimeMillis() + tempo);
+    }
 }

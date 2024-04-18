@@ -1,6 +1,7 @@
 package com.giancotsu.owar.repository;
 
-import com.giancotsu.owar.entity.player.Player;
+import com.giancotsu.owar.entity.player.PlayerEntity;
+import com.giancotsu.owar.repository.player.PlayerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,11 @@ class PlayerRepositoryTests {
 
     @Autowired
     PlayerRepository playerRepository;
-    Player player;
+    PlayerEntity player;
 
     @BeforeAll
     public void setUp() {
-        player = new Player();
+        player = new PlayerEntity();
         player.setNickname("Giancotsu");
         playerRepository.save(player);
     }
@@ -28,8 +29,8 @@ class PlayerRepositoryTests {
     @Test
     void getUserById_shouldReturnUser() {
 
-        Player playerTest = new Player();
-        Optional<Player>  playerTestOptional = playerRepository.findById(player.getId());
+        PlayerEntity playerTest = new PlayerEntity();
+        Optional<PlayerEntity>  playerTestOptional = playerRepository.findById(player.getId());
         if(playerTestOptional.isPresent()){
             playerTest = playerTestOptional.get();
         }

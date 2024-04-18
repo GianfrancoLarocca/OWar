@@ -1,14 +1,18 @@
-package com.giancotsu.owar.Service;
+package com.giancotsu.owar.service;
 
 import com.giancotsu.owar.dto.auth.*;
 import com.giancotsu.owar.dto.map.UserAuthMapper;
 import com.giancotsu.owar.email.EmailService;
+import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
+import com.giancotsu.owar.entity.player.PlayerEntity;
 import com.giancotsu.owar.entity.user.Role;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.entity.user.UserResetPasswordEntity;
 import com.giancotsu.owar.repository.RoleRepository;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.security.JWTGenerator;
+import com.giancotsu.owar.service.player.PlayerService;
+import com.giancotsu.owar.service.player.PlayerSviluppoService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +26,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import java.util.*;
 
 @Service
@@ -34,19 +37,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTGenerator tokenGenerator;
     private final EmailService emailService;
-
+    private final PlayerSviluppoService playerSviluppoService;
     private final Validator validator;
     Random random = new Random();
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, Validator validator) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, Validator validator) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenGenerator = tokenGenerator;
         this.emailService = emailService;
+        this.playerSviluppoService = playerSviluppoService;
         this.validator = validator;
 
 
@@ -94,7 +98,14 @@ public class AuthService {
         newUser.setActive(false);
         int randomActivationCode = random.nextInt(9999 - 1111) + 1111;
         newUser.setActivationCode(Integer.toString(randomActivationCode));
-        userRepository.save(newUser);
+
+        PlayerEntity player = new PlayerEntity();
+        player.setBasicInformation(new PlayerBasicInformationEntity(newUser.getUsername()));
+        newUser.setPlayer(player);
+        System.err.println(player);
+        UserEntity savedUser = userRepository.save(newUser);
+        PlayerService.setLoggedPlayer(savedUser.getPlayer());
+        playerSviluppoService.salvaSviluppo(savedUser);
 
         String activationUrl = "%s/activation/%s/%s".formatted(frontendUrl, newUser.getEmail(), newUser.getActivationCode());
         String emailBody = """                
@@ -136,6 +147,11 @@ public class AuthService {
         authResponse.setRole(authentication.getAuthorities().stream().findFirst().get().getAuthority());
         authResponse.setUsername(authentication.getName());
         authResponse.setExpiration(new Date(exp.getTime()));
+
+        Optional<UserEntity> loggedUser = userRepository.findByUsername(authentication.getName());
+        if(loggedUser.isPresent()) {
+            PlayerService.setLoggedPlayer(loggedUser.get().getPlayer());
+        }
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
@@ -189,8 +205,13 @@ public class AuthService {
 
         int randomActivationCode = random.nextInt(99999999 - 11111111) + 11111111;
         resetPassword.setSecureCode(Integer.toString(randomActivationCode));
-        UserResetPasswordEntity userResetPasswordEntity = new UserResetPasswordEntity(Integer.toString(randomActivationCode));
-        userEntity.setResetPasswordEntity(userResetPasswordEntity);
+        UserResetPasswordEntity userResetPasswordEntity;
+        if(userEntity.getResetPasswordEntity() != null) {
+            userEntity.getResetPasswordEntity().setSecureCode(Integer.toString(randomActivationCode));
+        } else {
+            userResetPasswordEntity = new UserResetPasswordEntity(Integer.toString(randomActivationCode));
+            userEntity.setResetPasswordEntity(userResetPasswordEntity);
+        }
         userRepository.save(userEntity);
 
         resetPassword.setEmail(email);

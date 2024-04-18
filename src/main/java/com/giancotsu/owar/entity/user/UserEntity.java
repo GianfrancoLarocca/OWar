@@ -1,10 +1,13 @@
 package com.giancotsu.owar.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.giancotsu.owar.entity.player.PlayerEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
+@ToString
 public class UserEntity {
 
     @Id
@@ -45,5 +49,8 @@ public class UserEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reset-password-id", referencedColumnName = "id")
     private UserResetPasswordEntity resetPasswordEntity;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private PlayerEntity player;
 
 }
