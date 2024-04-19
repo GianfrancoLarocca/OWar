@@ -1,23 +1,30 @@
 package com.giancotsu.owar.entity.risorse;
 
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
-import java.io.Serializable;
-
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
-public abstract class Risorsa implements Serializable {
+@ToString
+public abstract class Risorsa {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nome;
     private String unitaMisura;
     private Long quantita;
     private String urlImmagine;
 
-    private Double incrementoRisorsa = 0D;
+
 
     protected Risorsa() {
     }
 
-    protected Risorsa(String nome, String unitaMisura, Long quantita, String urlImmagine) {
+    public Risorsa(String nome, String unitaMisura, Long quantita, String urlImmagine) {
         this.nome = nome;
         this.unitaMisura = unitaMisura;
         this.quantita = quantita;

@@ -54,6 +54,7 @@ public class PlayerService {
         }
     }
 
+    @Deprecated
     public ResponseEntity<PlayerRisorse> getRisorsa() {
         Optional<PlayerRisorse> risorsa = playerRisorseRepository.findById(loggedPlayer.getPlayerRisorse().getId());
         if (risorsa.isPresent()) {

@@ -1,10 +1,14 @@
 package com.giancotsu.owar.entity.player;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.giancotsu.owar.entity.risorse.Metallo;
+import com.giancotsu.owar.entity.risorse.Risorsa;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,7 +34,6 @@ public class PlayerEntity {
     private PlayerRisorse playerRisorse;
 
     @OneToMany(cascade = {CascadeType.ALL})
-    @JsonManagedReference
     private Set<PlayerSviluppo> playerSviluppo;
 
     public PlayerEntity() {

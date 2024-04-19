@@ -5,6 +5,7 @@ import com.giancotsu.owar.dto.map.UserAuthMapper;
 import com.giancotsu.owar.email.EmailService;
 import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
 import com.giancotsu.owar.entity.player.PlayerEntity;
+import com.giancotsu.owar.entity.risorse.Metallo;
 import com.giancotsu.owar.entity.user.Role;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.entity.user.UserResetPasswordEntity;

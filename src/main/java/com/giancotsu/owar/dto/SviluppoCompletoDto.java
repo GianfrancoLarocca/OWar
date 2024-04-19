@@ -17,5 +17,7 @@ public class SviluppoCompletoDto {
     String descrizione;
     Integer livello;
     String urlImmagine;
-    Map<String, Double> costi;
+    Map<String, Long> costi;
+    Map<String, Long> crescita;
+
 }

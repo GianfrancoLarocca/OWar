@@ -1,14 +1,12 @@
 package com.giancotsu.owar.entity.player;
 
 import com.giancotsu.owar.entity.risorse.*;
-import com.giancotsu.owar.entity.risorse.Risorsa;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "player-risorse")
 @Data
 @NoArgsConstructor
 @ToString
@@ -18,11 +16,22 @@ public class PlayerRisorse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Risorsa metallo = new Metallo();
-    private Risorsa bitcoin = new Bitcoin();
-    private Risorsa Acqua = new Acqua();
-    private Risorsa Civili = new Civili();
-    private Risorsa Energia = new Energia();
-    private Risorsa Microchip = new Microchip();
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Metallo metallo = new Metallo();
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Bitcoin bitcoin = new Bitcoin();
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Acqua Acqua = new Acqua();
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Civili Civili = new Civili();
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Energia Energia = new Energia();
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Microchip Microchip = new Microchip();
 
 }

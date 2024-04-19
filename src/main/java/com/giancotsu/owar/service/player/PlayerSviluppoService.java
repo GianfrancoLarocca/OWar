@@ -6,6 +6,7 @@ import com.giancotsu.owar.entity.player.sviluppo.Sviluppo;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.projection.SviluppoCostiProjection;
+import com.giancotsu.owar.projection.SviluppoCrescitaRisorseProjection;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.PlayerRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
@@ -23,13 +24,11 @@ public class PlayerSviluppoService {
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final SviluppoRepository sviluppoRepository;
-    private final PlayerRepository playerRepository;
     private final UserRepository userRepository;
 
-    public PlayerSviluppoService(PlayerSviluppoRepository playerSviluppoRepository, SviluppoRepository sviluppoRepository, PlayerRepository playerRepository, UserRepository userRepository) {
+    public PlayerSviluppoService(PlayerSviluppoRepository playerSviluppoRepository, SviluppoRepository sviluppoRepository, UserRepository userRepository) {
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.sviluppoRepository = sviluppoRepository;
-        this.playerRepository = playerRepository;
         this.userRepository = userRepository;
         this.creaStrutture();
     }
@@ -42,6 +41,7 @@ public class PlayerSviluppoService {
 
         String nomeMetallo1 = "MetalForge Industries";
         Optional<Sviluppo> sviluppoDb = sviluppoRepository.findByNome(nomeMetallo1);
+        Map<RisorseEnum, Double> costiMetallo = new HashMap<>();
 
         if (sviluppoDb.isEmpty()) {
             Sviluppo metallo1 = new Sviluppo();
@@ -49,14 +49,16 @@ public class PlayerSviluppoService {
             metallo1.setDescrizione("NanoChip Technologies è un'azienda all'avanguardia nel settore della metallurgia e dell'ingegneria dei materiali. Specializzata nella produzione di nanochip metallici ad alte prestazioni, la nostra missione è quella di rivoluzionare il settore tecnologico attraverso l'innovazione e la precisione.");
             metallo1.setUrlImmagine("");
 
-            Map<RisorseEnum, Long> costi = new HashMap<>();
-            costi.put(RisorseEnum.MICROCHIP, 3L);
-            costi.put(RisorseEnum.ENERGIA, 2L);
-            costi.put(RisorseEnum.CIVILI, 1L);
-            costi.put(RisorseEnum.BITCOIN, 8L);
+            costiMetallo.put(RisorseEnum.MICROCHIP, 3.5);
+            costiMetallo.put(RisorseEnum.ENERGIA, 2.2);
+            costiMetallo.put(RisorseEnum.CIVILI, 1.6);
+            costiMetallo.put(RisorseEnum.BITCOIN, 8.1);
 
-            metallo1.setCostoBase(costi);
-            metallo1.setMoltiplicatoreCosto(3L);
+            metallo1.setCostoBase(costiMetallo);
+            metallo1.setMoltiplicatoreCosto(3.9);
+
+            metallo1.setMoltiplicatoreCrescitaRisorse(1.5);
+            metallo1.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 5.2));
 
             this.sviluppo.add(sviluppoRepository.save(metallo1));
         } else {
@@ -74,14 +76,16 @@ public class PlayerSviluppoService {
             metallo2.setDescrizione("Benvenuto alla SteelWorks Corporation, il fulcro industriale del tuo futuro urbano! Situata nel cuore della tua città tecnologicamente avanzata, la SteelWorks Corporation è il centro nevralgico della produzione di metallo di alta qualità per le tue imprese futuristiche. Qui, la tua ingegnosità si fonde con la potenza della tecnologia mentre estrai, raffini e trasformi il metallo per alimentare l'innovazione e il progresso della tua società. Con le sue moderne strutture e l'incessante attività delle tue macchine automatizzate, la SteelWorks Corporation è l'epicentro del tuo impegno nel plasmare un futuro brillante e prospero per la tua civiltà.");
             metallo2.setUrlImmagine("");
 
-            Map<RisorseEnum, Long> costi = new HashMap<>();
-            costi.put(RisorseEnum.MICROCHIP, 4L);
-            costi.put(RisorseEnum.ENERGIA, 1L);
-            costi.put(RisorseEnum.CIVILI, 1L);
-            costi.put(RisorseEnum.BITCOIN, 9L);
+            costiMetallo.put(RisorseEnum.MICROCHIP, 3.5);
+            costiMetallo.put(RisorseEnum.ENERGIA, 2.2);
+            costiMetallo.put(RisorseEnum.CIVILI, 1.6);
+            costiMetallo.put(RisorseEnum.BITCOIN, 8.1);
 
-            metallo2.setCostoBase(costi);
-            metallo2.setMoltiplicatoreCosto(4L);
+            metallo2.setCostoBase(costiMetallo);
+            metallo2.setMoltiplicatoreCosto(3.9);
+
+            metallo2.setMoltiplicatoreCrescitaRisorse(1.8);
+            metallo2.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 4.4));
 
             this.sviluppo.add(sviluppoRepository.save(metallo2));
         } else {
@@ -99,14 +103,16 @@ public class PlayerSviluppoService {
             metallo3.setDescrizione("Benvenuto ad AlloyTech Solutions, il nucleo tecnologico della tua avventura industriale nel futuro! Situata strategicamente nel cuore della tua metropoli futuristica, AlloyTech Solutions rappresenta l'apice dell'innovazione nella produzione e lavorazione dei metalli più avanzati. Qui, le tue ambizioni prendono vita mentre i tuoi esperti ingegneri e tecnici lavorano instancabilmente per estrarre, raffinare e forgiare leghe metalliche di qualità superiore. Con le sue strutture all'avanguardia e la precisione delle sue macchine automatizzate, AlloyTech Solutions è la fucina del tuo progresso tecnologico, alimentando le tue aspirazioni di creare un futuro in cui la scienza e l'ingegno si fondono per plasmare un mondo migliore.");
             metallo3.setUrlImmagine("");
 
-            Map<RisorseEnum, Long> costi = new HashMap<>();
-            costi.put(RisorseEnum.MICROCHIP, 1L);
-            costi.put(RisorseEnum.ENERGIA, 3L);
-            costi.put(RisorseEnum.CIVILI, 2L);
-            costi.put(RisorseEnum.BITCOIN, 6L);
+            costiMetallo.put(RisorseEnum.MICROCHIP, 3.5);
+            costiMetallo.put(RisorseEnum.ENERGIA, 2.2);
+            costiMetallo.put(RisorseEnum.CIVILI, 1.6);
+            costiMetallo.put(RisorseEnum.BITCOIN, 8.1);
 
-            metallo3.setCostoBase(costi);
-            metallo3.setMoltiplicatoreCosto(2L);
+            metallo3.setCostoBase(costiMetallo);
+            metallo3.setMoltiplicatoreCosto(3.9);
+
+            metallo3.setMoltiplicatoreCrescitaRisorse(1.2);
+            metallo3.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 8.8));
 
             this.sviluppo.add(sviluppoRepository.save(metallo3));
         } else {
@@ -117,6 +123,7 @@ public class PlayerSviluppoService {
 
         String microchipNome1 = "NanoChip Technologies";
         sviluppoDb = sviluppoRepository.findByNome(microchipNome1);
+        Map<RisorseEnum, Double> costiMicrochip = new HashMap<>();
 
         if (sviluppoDb.isEmpty()) {
             Sviluppo mc1 = new Sviluppo();
@@ -124,14 +131,16 @@ public class PlayerSviluppoService {
             mc1.setDescrizione("Benvenuto in NanoChip Technologies, il pioniere dell'innovazione nel campo dei microchip nel mondo del futuro! Situata al vertice della ricerca e dello sviluppo tecnologico, NanoChip Technologies è il cuore pulsante della tua rivoluzione digitale. Qui, un team di menti brillanti lavora incessantemente per progettare e produrre microchip all'avanguardia, capaci di alimentare le tue invenzioni più audaci e di trasformare il modo in cui interagiamo con il mondo digitale. Con la sua dedizione alla qualità e alla precisione, NanoChip Technologies è il motore del tuo progresso tecnologico, spingendo costantemente i confini dell'innovazione per plasmare un futuro in cui la potenza della tecnologia è nelle tue mani.");
             mc1.setUrlImmagine("");
 
-            Map<RisorseEnum, Long> costi = new HashMap<>();
-            costi.put(RisorseEnum.METALLO, 7L);
-            costi.put(RisorseEnum.ENERGIA, 3L);
-            costi.put(RisorseEnum.CIVILI, 2L);
-            costi.put(RisorseEnum.BITCOIN, 10L);
+            costiMicrochip.put(RisorseEnum.METALLO, 7.3);
+            costiMicrochip.put(RisorseEnum.ENERGIA, 3.7);
+            costiMicrochip.put(RisorseEnum.CIVILI, 2.6);
+            costiMicrochip.put(RisorseEnum.BITCOIN, 10.2);
 
-            mc1.setCostoBase(costi);
-            mc1.setMoltiplicatoreCosto(2L);
+            mc1.setCostoBase(costiMicrochip);
+            mc1.setMoltiplicatoreCosto(2.5);
+
+            mc1.setMoltiplicatoreCrescitaRisorse(1.5);
+            mc1.setCrescitaRisorse(Map.of(RisorseEnum.MICROCHIP, 5.4));
 
             this.sviluppo.add(sviluppoRepository.save(mc1));
         } else {
@@ -172,22 +181,27 @@ public class PlayerSviluppoService {
             }
 
             playerId = user.get().getPlayer().getId();
-            List<SviluppoCostiProjection> projection = playerSviluppoRepository.getSviluppoDto(playerId, sviluppoId);
-            sviluppoCompletoDto.setLivello(projection.stream().findFirst().get().getLivello());
+            List<SviluppoCostiProjection> costiProjection = playerSviluppoRepository.getCostiSviluppo(playerId, sviluppoId);
+            sviluppoCompletoDto.setLivello(costiProjection.stream().findFirst().get().getLivello());
 
-            Map<String, Double> costi = new HashMap<>();
-            projection.forEach(p -> {
-//                System.err.println(p.getRisorsa() + ": " + p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello())));
-
-                costi.put(p.getRisorsa(), p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello())));
+            Map<String, Long> costi = new HashMap<>();
+            costiProjection.forEach(p -> {
+                costi.put(p.getRisorsa(), Math.round(p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))));
             });
             sviluppoCompletoDto.setCosti(costi);
+
+            List<SviluppoCrescitaRisorseProjection> crescitaProjection = playerSviluppoRepository.getCrescitaRisorseSviluppo(playerId, sviluppoId);
+            Map<String, Long> crescita = new HashMap<>();
+            crescitaProjection.forEach(p -> {
+                crescita.put(p.getRisorsa(), Math.round(p.getCrescita() * (Math.pow(p.getMoltiplicatore(), sviluppoCompletoDto.getLivello()))));
+            });
+            sviluppoCompletoDto.setCrescita(crescita);
         } else {
             throw new RuntimeException("Player non loggato");
         }
 
 
-        System.err.println(sviluppoCompletoDto);
+//        System.err.println(sviluppoCompletoDto);
 
         return new ResponseEntity<>(sviluppoCompletoDto, HttpStatus.OK);
     }
