@@ -3,7 +3,7 @@ package com.giancotsu.owar.service.player;
 import com.giancotsu.owar.entity.player.PlayerEntity;
 import com.giancotsu.owar.entity.player.PlayerRisorse;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
-import com.giancotsu.owar.projection.SviluppoCrescitaRisorseProjection;
+import com.giancotsu.owar.projection.SviluppoProduzioneRisorseProjection;
 import com.giancotsu.owar.repository.player.PlayerRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,12 +14,12 @@ import java.util.*;
 @Service
 public class RisorseService {
 
-    private final int RESOURCE_UPDATE_INTERVAL = 5000; // Intervallo di aggiornamento delle risorse in millisecondi (60 secondi)
+    private final int RESOURCE_UPDATE_INTERVAL = 1000 * 60; // Intervallo di aggiornamento delle risorse in millisecondi
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerRepository playerRepository;
 
-    private Map<String, Long> resources = new HashMap<>();
+    private final Map<String, Double> resources = new HashMap<>();
 
     public RisorseService(PlayerSviluppoRepository playerSviluppoRepository, PlayerRepository playerRepository) {
         this.playerSviluppoRepository = playerSviluppoRepository;
@@ -44,10 +44,10 @@ public class RisorseService {
                     resources.put(RisorseEnum.BITCOIN.name(), pr.getBitcoin().getQuantita());
                     resources.put(RisorseEnum.ACQUA.name(), pr.getAcqua().getQuantita());
 
-                    List<SviluppoCrescitaRisorseProjection> crescitaProj = playerSviluppoRepository.getCrescitaRisorse(player.getId());
+                    List<SviluppoProduzioneRisorseProjection> produzioneProj = playerSviluppoRepository.getProduzioneRisorse(player.getId());
 
-                    crescitaProj.forEach(p -> {
-                        resources.put(p.getRisorsa(), Math.round(p.getCrescita() * (Math.pow(p.getMoltiplicatore(), p.getLivello())) + resources.get(p.getRisorsa())));
+                    produzioneProj.forEach(p -> {
+                        resources.put(p.getRisorsa(), p.getProduzione() * p.getLivello() * (Math.pow(p.getMoltiplicatore(), p.getLivello())) + resources.get(p.getRisorsa()));
                     });
                     pr.getMicrochip().setQuantita(resources.get(RisorseEnum.MICROCHIP.name()));
                     pr.getMetallo().setQuantita(resources.get(RisorseEnum.METALLO.name()));

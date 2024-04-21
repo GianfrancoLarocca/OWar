@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "player-sviluppo")
 @Data
 @NoArgsConstructor
 @ToString

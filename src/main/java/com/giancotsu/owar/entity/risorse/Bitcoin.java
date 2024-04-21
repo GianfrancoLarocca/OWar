@@ -10,6 +10,6 @@ public class Bitcoin extends Risorsa {
 
 
     public Bitcoin() {
-        super(RisorseEnum.BITCOIN.name(), "BTC", 0L, "../../assets/img/risorse/bank.png");
+        super(RisorseEnum.BITCOIN.name(), "BTC", 0.0, "../../assets/img/risorse/bank.png");
     }
 }

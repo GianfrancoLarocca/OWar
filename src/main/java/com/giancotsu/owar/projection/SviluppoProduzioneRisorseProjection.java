@@ -1,9 +1,9 @@
 package com.giancotsu.owar.projection;
 
-public interface SviluppoCrescitaRisorseProjection {
+public interface SviluppoProduzioneRisorseProjection {
 
     String getRisorsa();
-    Double getCrescita();
+    Double getProduzione();
     Double getMoltiplicatore();
     Integer getLivello();
 

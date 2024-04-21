@@ -6,7 +6,7 @@ import com.giancotsu.owar.entity.player.sviluppo.Sviluppo;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.projection.SviluppoCostiProjection;
-import com.giancotsu.owar.projection.SviluppoCrescitaRisorseProjection;
+import com.giancotsu.owar.projection.SviluppoProduzioneRisorseProjection;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import com.giancotsu.owar.repository.player.SviluppoRepository;
@@ -56,8 +56,8 @@ public class PlayerSviluppoService {
             metallo1.setCostoBase(costiMetallo);
             metallo1.setMoltiplicatoreCosto(3.9);
 
-            metallo1.setMoltiplicatoreCrescitaRisorse(2.5);
-            metallo1.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 5.2));
+            metallo1.setMoltiplicatoreProduzioneRisorse(5.9);
+            metallo1.setProduzioneRisorse(Map.of(RisorseEnum.METALLO, 1.5));
 
             this.sviluppo.add(sviluppoRepository.save(metallo1));
         } else {
@@ -83,8 +83,8 @@ public class PlayerSviluppoService {
             metallo2.setCostoBase(costiMetallo);
             metallo2.setMoltiplicatoreCosto(3.9);
 
-            metallo2.setMoltiplicatoreCrescitaRisorse(2.1);
-            metallo2.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 4.7));
+            metallo2.setMoltiplicatoreProduzioneRisorse(6.1);
+            metallo2.setProduzioneRisorse(Map.of(RisorseEnum.METALLO, 1.7));
 
             this.sviluppo.add(sviluppoRepository.save(metallo2));
         } else {
@@ -110,8 +110,8 @@ public class PlayerSviluppoService {
             metallo3.setCostoBase(costiMetallo);
             metallo3.setMoltiplicatoreCosto(3.9);
 
-            metallo3.setMoltiplicatoreCrescitaRisorse(1.9);
-            metallo3.setCrescitaRisorse(Map.of(RisorseEnum.METALLO, 7.8));
+            metallo3.setMoltiplicatoreProduzioneRisorse(7.9);
+            metallo3.setProduzioneRisorse(Map.of(RisorseEnum.METALLO, 1.8));
 
             this.sviluppo.add(sviluppoRepository.save(metallo3));
         } else {
@@ -138,8 +138,8 @@ public class PlayerSviluppoService {
             mc1.setCostoBase(costiMicrochip);
             mc1.setMoltiplicatoreCosto(2.5);
 
-            mc1.setMoltiplicatoreCrescitaRisorse(3.5);
-            mc1.setCrescitaRisorse(Map.of(RisorseEnum.MICROCHIP, 5.4));
+            mc1.setMoltiplicatoreProduzioneRisorse(5.5);
+            mc1.setProduzioneRisorse(Map.of(RisorseEnum.MICROCHIP, 1.4));
 
             this.sviluppo.add(sviluppoRepository.save(mc1));
         } else {
@@ -165,8 +165,8 @@ public class PlayerSviluppoService {
             mc2.setCostoBase(costiMicrochip);
             mc2.setMoltiplicatoreCosto(2.5);
 
-            mc2.setMoltiplicatoreCrescitaRisorse(2.9);
-            mc2.setCrescitaRisorse(Map.of(RisorseEnum.MICROCHIP, 6.1));
+            mc2.setMoltiplicatoreProduzioneRisorse(4.9);
+            mc2.setProduzioneRisorse(Map.of(RisorseEnum.MICROCHIP, 2.1));
 
             this.sviluppo.add(sviluppoRepository.save(mc2));
         } else {
@@ -192,8 +192,8 @@ public class PlayerSviluppoService {
             mc3.setCostoBase(costiMicrochip);
             mc3.setMoltiplicatoreCosto(2.5);
 
-            mc3.setMoltiplicatoreCrescitaRisorse(4.8);
-            mc3.setCrescitaRisorse(Map.of(RisorseEnum.MICROCHIP, 6.5));
+            mc3.setMoltiplicatoreProduzioneRisorse(5.8);
+            mc3.setProduzioneRisorse(Map.of(RisorseEnum.MICROCHIP, 2.5));
 
             this.sviluppo.add(sviluppoRepository.save(mc3));
         } else {
@@ -220,8 +220,8 @@ public class PlayerSviluppoService {
             energia1.setCostoBase(costiEnergia);
             energia1.setMoltiplicatoreCosto(4.5);
 
-            energia1.setMoltiplicatoreCrescitaRisorse(9.9);
-            energia1.setCrescitaRisorse(Map.of(RisorseEnum.ENERGIA, 8.9));
+            energia1.setMoltiplicatoreProduzioneRisorse(15.9);
+            energia1.setProduzioneRisorse(Map.of(RisorseEnum.ENERGIA, 3.9));
 
             this.sviluppo.add(sviluppoRepository.save(energia1));
         } else {
@@ -247,8 +247,8 @@ public class PlayerSviluppoService {
             energia2.setCostoBase(costiMicrochip);
             energia2.setMoltiplicatoreCosto(3.9);
 
-            energia2.setMoltiplicatoreCrescitaRisorse(6.5);
-            energia2.setCrescitaRisorse(Map.of(RisorseEnum.ENERGIA, 8.4));
+            energia2.setMoltiplicatoreProduzioneRisorse(11.5);
+            energia2.setProduzioneRisorse(Map.of(RisorseEnum.ENERGIA, 2.4));
 
             this.sviluppo.add(sviluppoRepository.save(energia2));
         } else {
@@ -274,8 +274,8 @@ public class PlayerSviluppoService {
             energia3.setCostoBase(costiMicrochip);
             energia3.setMoltiplicatoreCosto(2.2);
 
-            energia3.setMoltiplicatoreCrescitaRisorse(5.1);
-            energia3.setCrescitaRisorse(Map.of(RisorseEnum.ENERGIA, 7.5));
+            energia3.setMoltiplicatoreProduzioneRisorse(9.1);
+            energia3.setProduzioneRisorse(Map.of(RisorseEnum.ENERGIA, 1.8));
 
             this.sviluppo.add(sviluppoRepository.save(energia3));
         } else {
@@ -300,8 +300,8 @@ public class PlayerSviluppoService {
             civili1.setCostoBase(costiCivili);
             civili1.setMoltiplicatoreCosto(5.5);
 
-            civili1.setMoltiplicatoreCrescitaRisorse(4.9);
-            civili1.setCrescitaRisorse(Map.of(RisorseEnum.CIVILI, 15.9));
+            civili1.setMoltiplicatoreProduzioneRisorse(8.9);
+            civili1.setProduzioneRisorse(Map.of(RisorseEnum.CIVILI, 20.9));
 
             this.sviluppo.add(sviluppoRepository.save(civili1));
         } else {
@@ -325,8 +325,8 @@ public class PlayerSviluppoService {
             civili2.setCostoBase(costiCivili);
             civili2.setMoltiplicatoreCosto(4.8);
 
-            civili2.setMoltiplicatoreCrescitaRisorse(4.5);
-            civili2.setCrescitaRisorse(Map.of(RisorseEnum.CIVILI, 12.4));
+            civili2.setMoltiplicatoreProduzioneRisorse(7.5);
+            civili2.setProduzioneRisorse(Map.of(RisorseEnum.CIVILI, 15.4));
 
             this.sviluppo.add(sviluppoRepository.save(civili2));
         } else {
@@ -350,8 +350,8 @@ public class PlayerSviluppoService {
             civili3.setCostoBase(costiCivili);
             civili3.setMoltiplicatoreCosto(4.5);
 
-            civili3.setMoltiplicatoreCrescitaRisorse(2.5);
-            civili3.setCrescitaRisorse(Map.of(RisorseEnum.CIVILI, 8.9));
+            civili3.setMoltiplicatoreProduzioneRisorse(6.5);
+            civili3.setProduzioneRisorse(Map.of(RisorseEnum.CIVILI, 9.9));
 
             this.sviluppo.add(sviluppoRepository.save(civili3));
         } else {
@@ -379,8 +379,8 @@ public class PlayerSviluppoService {
             bitcoin1.setCostoBase(costiBitcoin);
             bitcoin1.setMoltiplicatoreCosto(6.3);
 
-            bitcoin1.setMoltiplicatoreCrescitaRisorse(9.9);
-            bitcoin1.setCrescitaRisorse(Map.of(RisorseEnum.BITCOIN, 50.9));
+            bitcoin1.setMoltiplicatoreProduzioneRisorse(9.9);
+            bitcoin1.setProduzioneRisorse(Map.of(RisorseEnum.BITCOIN, 5500.9));
 
             this.sviluppo.add(sviluppoRepository.save(bitcoin1));
         } else {
@@ -407,8 +407,8 @@ public class PlayerSviluppoService {
             bitcoin2.setCostoBase(costiBitcoin);
             bitcoin2.setMoltiplicatoreCosto(5.6);
 
-            bitcoin2.setMoltiplicatoreCrescitaRisorse(9.5);
-            bitcoin2.setCrescitaRisorse(Map.of(RisorseEnum.BITCOIN, 50.1));
+            bitcoin2.setMoltiplicatoreProduzioneRisorse(9.5);
+            bitcoin2.setProduzioneRisorse(Map.of(RisorseEnum.BITCOIN, 5000.1));
 
             this.sviluppo.add(sviluppoRepository.save(bitcoin2));
         } else {
@@ -435,8 +435,8 @@ public class PlayerSviluppoService {
             bitcoin3.setCostoBase(costiBitcoin);
             bitcoin3.setMoltiplicatoreCosto(6.0);
 
-            bitcoin3.setMoltiplicatoreCrescitaRisorse(8.5);
-            bitcoin3.setCrescitaRisorse(Map.of(RisorseEnum.BITCOIN, 48.9));
+            bitcoin3.setMoltiplicatoreProduzioneRisorse(8.5);
+            bitcoin3.setProduzioneRisorse(Map.of(RisorseEnum.BITCOIN, 4800.9));
 
             this.sviluppo.add(sviluppoRepository.save(bitcoin3));
         } else {
@@ -462,8 +462,8 @@ public class PlayerSviluppoService {
             acqua1.setCostoBase(costiAcqua);
             acqua1.setMoltiplicatoreCosto(10.1);
 
-            acqua1.setMoltiplicatoreCrescitaRisorse(7.5);
-            acqua1.setCrescitaRisorse(Map.of(RisorseEnum.ACQUA, 1.04));
+            acqua1.setMoltiplicatoreProduzioneRisorse(2.5);
+            acqua1.setProduzioneRisorse(Map.of(RisorseEnum.ACQUA, 1.08));
 
             this.sviluppo.add(sviluppoRepository.save(acqua1));
         } else {
@@ -488,8 +488,8 @@ public class PlayerSviluppoService {
             acqua2.setCostoBase(costiAcqua);
             acqua2.setMoltiplicatoreCosto(8.5);
 
-            acqua2.setMoltiplicatoreCrescitaRisorse(3.5);
-            acqua2.setCrescitaRisorse(Map.of(RisorseEnum.ACQUA, 1.015));
+            acqua2.setMoltiplicatoreProduzioneRisorse(1.9);
+            acqua2.setProduzioneRisorse(Map.of(RisorseEnum.ACQUA, 1.4));
 
             this.sviluppo.add(sviluppoRepository.save(acqua2));
         } else {
@@ -514,8 +514,8 @@ public class PlayerSviluppoService {
             acqua3.setCostoBase(costiAcqua);
             acqua3.setMoltiplicatoreCosto(9.3);
 
-            acqua3.setMoltiplicatoreCrescitaRisorse(4.2);
-            acqua3.setCrescitaRisorse(Map.of(RisorseEnum.ACQUA, 1.023));
+            acqua3.setMoltiplicatoreProduzioneRisorse(1.8);
+            acqua3.setProduzioneRisorse(Map.of(RisorseEnum.ACQUA, 1.25));
 
             this.sviluppo.add(sviluppoRepository.save(acqua3));
         } else {
@@ -557,24 +557,25 @@ public class PlayerSviluppoService {
             List<SviluppoCostiProjection> costiProjection = playerSviluppoRepository.getCostiSviluppo(playerId, sviluppoId);
             sviluppoCompletoDto.setLivello(costiProjection.stream().findFirst().get().getLivello());
 
-            Map<String, Long> costi = new HashMap<>();
+            Map<String, Double> costi = new HashMap<>();
             costiProjection.forEach(p -> {
-                costi.put(p.getRisorsa(), Math.round(p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))));
+                costi.put(p.getRisorsa(), p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello()-1.0)));
             });
             sviluppoCompletoDto.setCosti(costi);
 
-            List<SviluppoCrescitaRisorseProjection> crescitaProjection = playerSviluppoRepository.getCrescitaRisorseSviluppo(playerId, sviluppoId);
-            Map<String, Long> crescita = new HashMap<>();
-            crescitaProjection.forEach(p -> {
-                crescita.put(p.getRisorsa(), Math.round(p.getCrescita() * (Math.pow(p.getMoltiplicatore(), sviluppoCompletoDto.getLivello()))));
+            List<SviluppoProduzioneRisorseProjection> produzioneProjection = playerSviluppoRepository.getProduzioneRisorseSviluppo(playerId, sviluppoId);
+            Map<String, Double> produzioneAttuale = new HashMap<>();
+            Map<String, Double> produzioneProssimoLivello = new HashMap<>();
+            produzioneProjection.forEach(p -> {
+                long livello = sviluppoCompletoDto.getLivello();
+                produzioneAttuale.put(p.getRisorsa(), p.getProduzione() * livello * (Math.pow(p.getMoltiplicatore(), livello)));
+                produzioneProssimoLivello.put(p.getRisorsa(), p.getProduzione() * (livello+1) * (Math.pow(p.getMoltiplicatore(), (livello+1))));
             });
-            sviluppoCompletoDto.setCrescita(crescita);
+            sviluppoCompletoDto.setProduzioneAttuale(produzioneAttuale);
+            sviluppoCompletoDto.setProduzioneProssimoLivello(produzioneProssimoLivello);
         } else {
             throw new RuntimeException("Player non loggato");
         }
-
-
-//        System.err.println(sviluppoCompletoDto);
 
         return new ResponseEntity<>(sviluppoCompletoDto, HttpStatus.OK);
     }

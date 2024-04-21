@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.Locale;
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
@@ -16,7 +18,7 @@ public abstract class Risorsa {
 
     private String nome;
     private String unitaMisura;
-    private Long quantita;
+    private Double quantita;
     private String urlImmagine;
 
 
@@ -24,7 +26,7 @@ public abstract class Risorsa {
     protected Risorsa() {
     }
 
-    public Risorsa(String nome, String unitaMisura, Long quantita, String urlImmagine) {
+    public Risorsa(String nome, String unitaMisura, Double quantita, String urlImmagine) {
         this.nome = nome;
         this.unitaMisura = unitaMisura;
         this.quantita = quantita;
@@ -33,12 +35,16 @@ public abstract class Risorsa {
 
     public String valueShort() {
         String quantitaShort = quantita.toString();
-        if(quantita>999 && quantita<1000000) {
-            quantitaShort = String.format("%.1f %s", (quantita/1000.0), "k");
+        if(quantita<1000) {
+            quantitaShort = String.format(Locale.ITALY, "%.0f", quantita);
+        } else if(quantita>999 && quantita<1000000) {
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000.0), "k");
         } else if(quantita>999999 && quantita<1000000000) {
-            quantitaShort = String.format("%.3f %s", (quantita/1000000.0), "M");
-        } else if (quantita>999999999) {
-            quantitaShort = String.format("%.3f %s", (quantita/1000000000.0), "Bn");
+            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
+        } else if (quantita>999999999  && quantita<1000000000000L) {
+            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
+        } else {
+            quantitaShort = "WOW";
         }
 
         return "%s %s".formatted(quantitaShort, unitaMisura);
@@ -46,13 +52,19 @@ public abstract class Risorsa {
 
     public String valueShorter() {
         String quantitaShort = quantita.toString();
-        if(quantita>999 && quantita<1000000) {
-            quantitaShort = String.format("%.1f %s", (quantita/1000.0), "k");
+        if(quantita<1000) {
+            quantitaShort = String.format(Locale.ITALY, "%.0f", quantita);
+        } else if(quantita>999 && quantita<1000000) {
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000.0), "k");
         } else if(quantita>999999 && quantita<1000000000) {
-            quantitaShort = String.format("%.3f %s", (quantita/1000000.0), "M");
-        } else if (quantita>999999999) {
-            quantitaShort = String.format("%.3f %s", (quantita/1000000000.0), "Bn");
+            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
+        } else if (quantita>999999999 && quantita<1000000000000L) {
+            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
         }
+        else {
+            quantitaShort = "WOW";
+        }
+
         return "%s".formatted(quantitaShort);
     }
 

@@ -23,7 +23,7 @@ public class Sviluppo {
     private String urlImmagine;
 
     private Double moltiplicatoreCosto = 1.2;
-    private Double moltiplicatoreCrescitaRisorse = 1.1;
+    private Double moltiplicatoreProduzioneRisorse = 1.1;
 
     @ElementCollection
     @CollectionTable(name = "map_costo_base", joinColumns = @JoinColumn(name = "sviluppo_id"))
@@ -31,9 +31,9 @@ public class Sviluppo {
     private Map<RisorseEnum, Double> costoBase;
 
     @ElementCollection
-    @CollectionTable(name = "map_crescita_risorse", joinColumns = @JoinColumn(name = "sviluppo_id"))
+    @CollectionTable(name = "map_produzione_risorse", joinColumns = @JoinColumn(name = "sviluppo_id"))
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<RisorseEnum, Double> crescitaRisorse;
+    private Map<RisorseEnum, Double> produzioneRisorse;
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JsonManagedReference
