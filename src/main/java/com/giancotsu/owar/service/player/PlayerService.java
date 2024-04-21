@@ -1,5 +1,7 @@
 package com.giancotsu.owar.service.player;
 
+import com.giancotsu.owar.dto.RisorsaDto;
+import com.giancotsu.owar.dto.map.RisorseMapper;
 import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
 import com.giancotsu.owar.entity.player.PlayerEntity;
 import com.giancotsu.owar.entity.player.PlayerRisorse;
@@ -10,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,11 +58,11 @@ public class PlayerService {
         }
     }
 
-    @Deprecated
-    public ResponseEntity<PlayerRisorse> getRisorsa() {
+    public ResponseEntity<List<RisorsaDto>> getRisorsa() {
         Optional<PlayerRisorse> risorsa = playerRisorseRepository.findById(loggedPlayer.getPlayerRisorse().getId());
         if (risorsa.isPresent()) {
-            return new ResponseEntity<>(risorsa.get(), HttpStatus.OK);
+            List<RisorsaDto> risorseDto = RisorseMapper.mapToDto(risorsa.get());
+            return new ResponseEntity<>(risorseDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
