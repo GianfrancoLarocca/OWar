@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,7 +33,7 @@ public class PlayerEntity {
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JsonIgnore
-    private Set<PlayerSviluppo> playerSviluppo;
+    private List<PlayerSviluppo> playerSviluppo;
 
     public PlayerEntity() {
         this.playerRisorse = new PlayerRisorse();

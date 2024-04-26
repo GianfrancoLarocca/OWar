@@ -12,7 +12,7 @@ import java.util.Map;
 @ToString
 public class SviluppoCompletoDto {
 
-
+    private long id;
     private String nome;
     private String descrizione;
     private Integer livello;
@@ -20,6 +20,17 @@ public class SviluppoCompletoDto {
     private Map<String, Double> costi;
     private Map<String, Double> produzioneAttuale;
     private Map<String, Double> produzioneProssimoLivello;
+    private String chance;
+
+    public SviluppoCompletoDto(String nome, String descrizione, Integer livello, String urlImmagine, Map<String, Double> costi, Map<String, Double> produzioneAttuale, Map<String, Double> produzioneProssimoLivello) {
+        this.nome = nome;
+        this.descrizione = descrizione;
+        this.livello = livello;
+        this.urlImmagine = urlImmagine;
+        this.costi = costi;
+        this.produzioneAttuale = produzioneAttuale;
+        this.produzioneProssimoLivello = produzioneProssimoLivello;
+    }
 
     public String getNome() {
         return nome;
@@ -90,5 +101,13 @@ public class SviluppoCompletoDto {
 
     public void setProduzioneProssimoLivello(Map<String, Double> produzioneProssimoLivello) {
         this.produzioneProssimoLivello = produzioneProssimoLivello;
+    }
+
+    public String getChance() {
+        return chance;
+    }
+
+    public void setChance(String chance) {
+        this.chance = chance;
     }
 }

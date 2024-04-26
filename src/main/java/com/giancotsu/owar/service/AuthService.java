@@ -105,7 +105,6 @@ public class AuthService {
         newUser.setPlayer(player);
         System.err.println(player);
         UserEntity savedUser = userRepository.save(newUser);
-        PlayerService.setLoggedPlayer(savedUser.getPlayer());
         playerSviluppoService.salvaSviluppo(savedUser);
 
         String activationUrl = "%s/activation/%s/%s".formatted(frontendUrl, newUser.getEmail(), newUser.getActivationCode());
@@ -141,18 +140,12 @@ public class AuthService {
         String token = tokenGenerator.generateToken(authentication);
         Date exp = tokenGenerator.extractExpiration(token);
 
-
         AuthResponseDto authResponse = new AuthResponseDto();
         authResponse.setToken(token);
         authResponse.setType("Bearer ");
         authResponse.setRole(authentication.getAuthorities().stream().findFirst().get().getAuthority());
         authResponse.setUsername(authentication.getName());
         authResponse.setExpiration(new Date(exp.getTime()));
-
-        Optional<UserEntity> loggedUser = userRepository.findByUsername(authentication.getName());
-        if(loggedUser.isPresent()) {
-            PlayerService.setLoggedPlayer(loggedUser.get().getPlayer());
-        }
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }

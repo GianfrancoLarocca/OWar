@@ -43,8 +43,8 @@ public abstract class Risorsa {
             quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
         } else if (quantita>999999999  && quantita<1000000000000L) {
             quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
-        } else {
-            quantitaShort = "WOW";
+        } else if (quantita>999999999999L){
+            quantitaShort = quantita.toString();
         }
 
         return "%s %s".formatted(quantitaShort, unitaMisura);
@@ -60,12 +60,16 @@ public abstract class Risorsa {
             quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
         } else if (quantita>999999999 && quantita<1000000000000L) {
             quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
-        }
-        else {
+        } else if (quantita>999999999999L){
             quantitaShort = "WOW";
         }
 
         return "%s".formatted(quantitaShort);
+    }
+
+    public String value() {
+        String q = String.format(Locale.ITALY, "%.0f", quantita);
+        return "%s %s".formatted(q, unitaMisura);
     }
 
     public String extendedValue() {
