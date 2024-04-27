@@ -8,8 +8,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlayerSviluppoRepository extends JpaRepository<PlayerSviluppo, Long> {
+
+    @Query(value = """
+            SELECT *
+            FROM player_sviluppo
+            WHERE player_sviluppo.player_id = :playerId AND player_sviluppo.sviluppo_id = :sviluppoId
+            """, nativeQuery = true)
+    Optional<PlayerSviluppo> findByPlayerIdAndSviluppoId(Long playerId, Long sviluppoId);
 
     @Query(value = """
             SELECT livello, moltiplicatore_costo AS moltiplicatore, map_costo_base.costo_base as costo, map_costo_base.costo_base_key as risorsa

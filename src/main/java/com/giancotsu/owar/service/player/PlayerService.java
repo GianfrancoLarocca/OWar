@@ -85,7 +85,7 @@ public class PlayerService {
         Optional<PlayerEntity> optionalPlayer = playerRepository.findById(getUserFromAuthorizationToken(authorizationToken).getPlayer().getId());
         if (optionalPlayer.isPresent()) {
             PlayerEntity player = optionalPlayer.get();
-            Optional<PlayerSviluppo> ops = playerSviluppoRepository.findById(sviluppoId);
+            Optional<PlayerSviluppo> ops = playerSviluppoRepository.findByPlayerIdAndSviluppoId(player.getId(), sviluppoId);
             if (ops.isPresent()) {
                 PlayerSviluppo ps = ops.get();
                 if (player.getId() == ps.getPlayer().getId()) {
@@ -103,7 +103,7 @@ public class PlayerService {
         Optional<PlayerEntity> optionalPlayer = playerRepository.findById(getUserFromAuthorizationToken(authorizationToken).getPlayer().getId());
         if (optionalPlayer.isPresent()) {
             PlayerEntity player = optionalPlayer.get();
-            Optional<PlayerSviluppo> ops = playerSviluppoRepository.findById(sviluppoId);
+            Optional<PlayerSviluppo> ops = playerSviluppoRepository.findByPlayerIdAndSviluppoId(player.getId(), sviluppoId);
             if (ops.isPresent()) {
                 PlayerSviluppo ps = ops.get();
                 if (player.getId() == ps.getPlayer().getId()) {

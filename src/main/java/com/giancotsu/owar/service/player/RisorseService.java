@@ -26,7 +26,7 @@ public class RisorseService {
 
     private final int SECONDI = 1;
     private final int RESOURCE_UPDATE_INTERVAL = 1000 * SECONDI; // Intervallo di aggiornamento delle risorse in millisecondi
-    private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 60 * 60; // Intervallo di salvataggio delle risorse nel database in millisecondi
+    private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 60;// * 60; // Intervallo di salvataggio delle risorse nel database in millisecondi
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerRepository playerRepository;
@@ -97,13 +97,10 @@ public class RisorseService {
 
         if (!this.playerIds.isEmpty()) {
             for (Long playerId : playerIds) {
-                playerResources.keySet().forEach(player -> {
-                    playerResources.get(player).keySet().forEach(pr -> {
-
+                    playerResources.get(playerId).keySet().forEach(pr -> {
                         Double quantity = (quantityToUpdate.get(playerId).get(pr) / 60.0) * SECONDI;
-                        playerResources.get(player).put(pr, playerResources.get(player).get(pr) + quantity );
+                        playerResources.get(playerId).put(pr, playerResources.get(playerId).get(pr) + quantity );
                     });
-                });
             }
         }
     }
@@ -157,8 +154,7 @@ public class RisorseService {
     //metodo che restituisce le risorse del player che ha fatto la richiesta
     public ResponseEntity<List<RisorsaDto>> getPlayerResources(String bearerToken) {
 
-        UserEntity user = this.getUserFromAuthorizationToken(bearerToken);
-        Long playerId = user.getPlayer().getId();
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
 
         Map<String, Double> playerRes = playerResources.get(playerId);
 
@@ -181,6 +177,7 @@ public class RisorseService {
         Set<Long> playerIds = playerRepository.getAllPlayerId();
         if (!playerIds.isEmpty()) {
             for (Long playerId : playerIds) {
+                //System.err.println("playerId: " + playerId);
 
                 PlayerEntity player = playerRepository.findById(playerId).get();
                 PlayerRisorse pr = player.getPlayerRisorse();
@@ -193,6 +190,8 @@ public class RisorseService {
                 pr.getCivili().setQuantita(playerRes.get(RisorseEnum.CIVILI.name()));
                 pr.getBitcoin().setQuantita(playerRes.get(RisorseEnum.BITCOIN.name()));
                 pr.getAcqua().setQuantita(playerRes.get(RisorseEnum.ACQUA.name()));
+
+                //System.err.println("pr mc: " + pr.getCivili().getQuantita());
 
                 playerRepository.save(player);
             }
@@ -216,5 +215,11 @@ public class RisorseService {
             } else {
                 throw new UsernameNotFoundException("User not found");
             }
+        }
+
+        private Long getPlayerIdByAuthorizationToken (String authorizationToken) {
+            String jwt = this.getJWTFromHeaderRequest(authorizationToken);
+            String username = jwtGenerator.extractUsername(jwt);
+            return userRepository.getPlayerIdByUsername(username);
         }
     }
