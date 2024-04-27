@@ -5,18 +5,18 @@ import com.giancotsu.owar.dto.map.UserAuthMapper;
 import com.giancotsu.owar.email.EmailService;
 import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
 import com.giancotsu.owar.entity.player.PlayerEntity;
-import com.giancotsu.owar.entity.risorse.Metallo;
 import com.giancotsu.owar.entity.user.Role;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.entity.user.UserResetPasswordEntity;
+import com.giancotsu.owar.event.user.UserRegisteredEvent;
 import com.giancotsu.owar.repository.RoleRepository;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.security.JWTGenerator;
-import com.giancotsu.owar.service.player.PlayerService;
 import com.giancotsu.owar.service.player.PlayerSviluppoService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,11 +40,13 @@ public class AuthService {
     private final EmailService emailService;
     private final PlayerSviluppoService playerSviluppoService;
     private final Validator validator;
+
+    private final ApplicationEventPublisher eventPublisher;
     Random random = new Random();
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, Validator validator) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, Validator validator, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -53,6 +55,7 @@ public class AuthService {
         this.emailService = emailService;
         this.playerSviluppoService = playerSviluppoService;
         this.validator = validator;
+        this.eventPublisher = eventPublisher;
 
 
         if (roleRepository.findByName("USER").isEmpty()) {
@@ -128,6 +131,9 @@ public class AuthService {
         //emailService.sendHtmlMessage(newUser.getEmail(), "OWar - Conferma il tuo account", emailBody);
 
         registerResponse.setMessages(new ArrayList<>(Collections.singleton("User registered successfully")));
+
+        eventPublisher.publishEvent(new UserRegisteredEvent(this, savedUser));
+
         return new ResponseEntity<>(registerResponse, HttpStatus.OK);
     }
 

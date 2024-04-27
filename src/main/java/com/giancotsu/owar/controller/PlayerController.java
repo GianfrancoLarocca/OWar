@@ -40,7 +40,7 @@ public class PlayerController {
 
     @GetMapping(value = "risorse")
     public ResponseEntity<List<RisorsaDto>> getPlayerRisorse(@RequestHeader("Authorization") String bearerToken) {
-        return this.playerService.getRisorsa(bearerToken);
+        return this.risorseService.getPlayerResources(bearerToken);
     }
 
     @GetMapping(value = "strutture")
@@ -60,7 +60,7 @@ public class PlayerController {
 
     @GetMapping(value = "strutture/produzione")
     public ResponseEntity<List<ProduzioneRisorseDto>> getProduzione(@RequestHeader("Authorization") String bearerToken) {
-        return this.risorseService.getProductionResources(bearerToken);
+        return this.risorseService.getProductionResourcesDto(bearerToken);
     }
 
     @GetMapping(value = "strutture/id/{sviluppoId}/alzalivello")

@@ -12,4 +12,8 @@ public class Metallo extends Risorsa {
     public Metallo() {
         super(RisorseEnum.METALLO.name(), "Kg", 0.0, "../../assets/img/risorse/metal.png");
     }
+
+    public Metallo(Double quantity) {
+        super(RisorseEnum.METALLO.name(), "Kg", quantity, "../../assets/img/risorse/metal.png");
+    }
 }

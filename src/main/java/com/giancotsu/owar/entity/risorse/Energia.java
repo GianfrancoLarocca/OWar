@@ -11,4 +11,8 @@ public class Energia extends Risorsa {
     public Energia() {
         super(RisorseEnum.ENERGIA.name(), "KJ", 0.0, "../../assets/img/risorse/energy.png");
     }
+
+    public Energia(Double quantity) {
+        super(RisorseEnum.ENERGIA.name(), "KJ", quantity, "../../assets/img/risorse/energy.png");
+    }
 }

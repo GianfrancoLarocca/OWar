@@ -66,6 +66,7 @@ public class PlayerService {
         }
     }
 
+    @Deprecated
     public ResponseEntity<List<RisorsaDto>> getRisorsa(String bearerToken) {
         Optional<PlayerRisorse> risorsa = playerRisorseRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
         if (risorsa.isPresent()) {

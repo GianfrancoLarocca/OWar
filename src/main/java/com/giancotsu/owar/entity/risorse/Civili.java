@@ -12,4 +12,8 @@ public class Civili extends Risorsa {
     public Civili() {
         super(RisorseEnum.CIVILI.name(), "Persone", 0.0, "../../assets/img/risorse/people.png");
     }
+
+    public Civili(Double quantity) {
+        super(RisorseEnum.CIVILI.name(), "Persone", quantity, "../../assets/img/risorse/people.png");
+    }
 }

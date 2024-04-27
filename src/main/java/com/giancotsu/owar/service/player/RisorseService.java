@@ -1,9 +1,11 @@
 package com.giancotsu.owar.service.player;
 
 import com.giancotsu.owar.dto.ProduzioneRisorseDto;
+import com.giancotsu.owar.dto.RisorsaDto;
+import com.giancotsu.owar.dto.map.RisorseMapper;
 import com.giancotsu.owar.entity.player.PlayerEntity;
 import com.giancotsu.owar.entity.player.PlayerRisorse;
-import com.giancotsu.owar.entity.risorse.RisorseEnum;
+import com.giancotsu.owar.entity.risorse.*;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.projection.SviluppoProduzioneRisorseProjection;
 import com.giancotsu.owar.repository.UserRepository;
@@ -22,81 +24,114 @@ import java.util.*;
 @Service
 public class RisorseService {
 
-    private final int RESOURCE_UPDATE_INTERVAL = 1000 * 10; // Intervallo di aggiornamento delle risorse in millisecondi
+    private final int RESOURCE_UPDATE_INTERVAL = 1000 * 2; // Intervallo di aggiornamento delle risorse in millisecondi
+    private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 60 * 60; // Intervallo di salvataggio delle risorse nel database in millisecondi
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerRepository playerRepository;
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    private final Map<String, Double> resources = new HashMap<>();
+    private final Map<Long, Map<String, Double>> playerResources = new HashMap<>();
 
     public RisorseService(PlayerSviluppoRepository playerSviluppoRepository, PlayerRepository playerRepository, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.playerRepository = playerRepository;
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
+
+        this.extractPlayersResourcesFromDb();
     }
 
-    //metodo che aggiorna le risorse ogni 10 secondi di tutti i player
-    @Scheduled(fixedDelay = RESOURCE_UPDATE_INTERVAL)
-    public void updateResources() {
+    public void addNewPlayerResources(UserEntity user) {
+        Optional<PlayerEntity> optionalPlayer = playerRepository.findById(user.getPlayer().getId());
+        if (optionalPlayer.isPresent()) {
+            Map<String, Double> res = new HashMap<>();
 
+            PlayerEntity player = optionalPlayer.get();
+            PlayerRisorse pr = player.getPlayerRisorse();
+
+            res.put(RisorseEnum.MICROCHIP.name(), pr.getMicrochip().getQuantita());
+            res.put(RisorseEnum.METALLO.name(), pr.getMetallo().getQuantita());
+            res.put(RisorseEnum.ENERGIA.name(), pr.getEnergia().getQuantita());
+            res.put(RisorseEnum.CIVILI.name(), pr.getCivili().getQuantita());
+            res.put(RisorseEnum.BITCOIN.name(), pr.getBitcoin().getQuantita());
+            res.put(RisorseEnum.ACQUA.name(), pr.getAcqua().getQuantita());
+
+            playerResources.put(player.getId(), res);
+            System.err.println("addNewPlayerResources" + playerResources.get(player.getId()));
+        }
+    }
+
+    private void extractPlayersResourcesFromDb() {
         Set<Long> playerIds = playerRepository.getAllPlayerId();
-        if(playerIds.size()>0) {
-            for(Long playerId : playerIds) {
-                Optional<PlayerEntity> playerOptional = playerRepository.findById(playerId);
-                if (playerOptional.isPresent()) {
-                    PlayerEntity player = playerOptional.get();
-                    PlayerRisorse pr = player.getPlayerRisorse();
+        if (!playerIds.isEmpty()) {
+            Map<String, Double> res = new HashMap<>();
+            for (Long playerId : playerIds) {
+                PlayerEntity player = playerRepository.findById(playerId).get();
+                PlayerRisorse pr = player.getPlayerRisorse();
 
-                    resources.put(RisorseEnum.MICROCHIP.name(), pr.getMicrochip().getQuantita());
-                    resources.put(RisorseEnum.METALLO.name(), pr.getMetallo().getQuantita());
-                    resources.put(RisorseEnum.ENERGIA.name(), pr.getEnergia().getQuantita());
-                    resources.put(RisorseEnum.CIVILI.name(), pr.getCivili().getQuantita());
-                    resources.put(RisorseEnum.BITCOIN.name(), pr.getBitcoin().getQuantita());
-                    resources.put(RisorseEnum.ACQUA.name(), pr.getAcqua().getQuantita());
+                res.put(RisorseEnum.MICROCHIP.name(), pr.getMicrochip().getQuantita());
+                res.put(RisorseEnum.METALLO.name(), pr.getMetallo().getQuantita());
+                res.put(RisorseEnum.ENERGIA.name(), pr.getEnergia().getQuantita());
+                res.put(RisorseEnum.CIVILI.name(), pr.getCivili().getQuantita());
+                res.put(RisorseEnum.BITCOIN.name(), pr.getBitcoin().getQuantita());
+                res.put(RisorseEnum.ACQUA.name(), pr.getAcqua().getQuantita());
 
-                    List<SviluppoProduzioneRisorseProjection> produzioneProj = playerSviluppoRepository.getProduzioneRisorse(player.getId());
+                playerResources.put(playerId, res);
 
-                    produzioneProj.forEach(p -> {
-                        resources.put(p.getRisorsa(), (p.getProduzione() * p.getLivello() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))) / 6 + resources.get(p.getRisorsa()));
-                    });
-
-                    pr.getMicrochip().setQuantita(resources.get(RisorseEnum.MICROCHIP.name()));
-                    pr.getMetallo().setQuantita(resources.get(RisorseEnum.METALLO.name()));
-                    pr.getEnergia().setQuantita(resources.get(RisorseEnum.ENERGIA.name()));
-                    pr.getCivili().setQuantita(resources.get(RisorseEnum.CIVILI.name()));
-                    pr.getBitcoin().setQuantita(resources.get(RisorseEnum.BITCOIN.name()));
-                    pr.getAcqua().setQuantita(resources.get(RisorseEnum.ACQUA.name()));
-                    player.setPlayerRisorse(pr);
-                    playerRepository.saveAndFlush(player);
-                }
             }
         }
     }
 
-    //metodo che restituisce la produzione al minuto di ogni risorsa del player
-    public ResponseEntity<List<ProduzioneRisorseDto>> getProductionResources(String bearerToken) {
+    //metodo che aggiorna le risorse del player ogni tot di tempo
+    @Scheduled(fixedDelay = RESOURCE_UPDATE_INTERVAL)
+    private void updatePlayersResources() {
+
+        Set<Long> playerIds = playerRepository.getAllPlayerId();
+        if (!playerIds.isEmpty()) {
+            for (Long playerId : playerIds) {
+                Map<String, Double> quantityToUpdate = this.getProductionResources(playerId);
+
+                playerResources.keySet().forEach(player -> {
+                    playerResources.get(player).keySet().forEach(pr -> {
+                        playerResources.get(player).put(pr, playerResources.get(player).get(pr) + quantityToUpdate.get(pr));
+                    });
+                });
+            }
+        }
+    }
+
+    //metodo che restituisce la produzione per ogni risorsa al minuto del player
+    private Map<String, Double> getProductionResources(Long playerId) {
+
+        List<SviluppoProduzioneRisorseProjection> produzioneProj = playerSviluppoRepository.getProduzioneRisorse(playerId);
 
         Map<String, Double> prod = new HashMap<>();
+
+        produzioneProj.forEach(p -> {
+            Double valoreAttuale;
+            if (prod.get(p.getRisorsa()) == null) {
+                valoreAttuale = 0.0;
+            } else {
+                valoreAttuale = prod.get(p.getRisorsa());
+            }
+            prod.put(p.getRisorsa(), (p.getProduzione() * p.getLivello() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))) + valoreAttuale);
+        });
+
+        return prod;
+    }
+
+    //metodo che restituisce la produzione delle risorse sottoforma di dto
+    public ResponseEntity<List<ProduzioneRisorseDto>> getProductionResourcesDto(String bearerToken) {
+
         List<ProduzioneRisorseDto> prodDto = new ArrayList<>();
 
         Optional<PlayerEntity> playerOptional = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
         if (playerOptional.isPresent()) {
-            PlayerEntity player = playerOptional.get();
 
-            List<SviluppoProduzioneRisorseProjection> produzioneProj = playerSviluppoRepository.getProduzioneRisorse(player.getId());
+            Map<String, Double> prod = this.getProductionResources(playerOptional.get().getId());
 
-            produzioneProj.forEach(p -> {
-                Double valoreAttuale = 0.0;
-                if(prod.get(p.getRisorsa()) == null) {
-                    valoreAttuale = 0.0;
-                } else {
-                    valoreAttuale = prod.get(p.getRisorsa());
-                }
-                prod.put(p.getRisorsa(), (p.getProduzione() * p.getLivello() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))) + valoreAttuale);
-            });
             prod.keySet().forEach(p -> {
                 ProduzioneRisorseDto dto = new ProduzioneRisorseDto(p, prod.get(p));
                 prodDto.add(dto);
@@ -108,22 +143,67 @@ public class RisorseService {
         return new ResponseEntity<>(prodDto, HttpStatus.OK);
     }
 
-    private String getJWTFromHeaderRequest(String authorizationToken) {
-        if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith("Bearer ")) {
-            return authorizationToken.substring(7);
-        } else {
-            return null;
+    //metodo che restituisce le risorse del player che ha fatto la richiesta
+    public ResponseEntity<List<RisorsaDto>> getPlayerResources(String bearerToken) {
+
+        UserEntity user = this.getUserFromAuthorizationToken(bearerToken);
+        Long playerId = user.getPlayer().getId();
+
+        Map<String, Double> playerRes = playerResources.get(playerId);
+
+        Microchip mc = new Microchip(playerRes.get(RisorseEnum.MICROCHIP.name()));
+        Metallo met = new Metallo(playerRes.get(RisorseEnum.METALLO.name()));
+        Energia ene = new Energia(playerRes.get(RisorseEnum.ENERGIA.name()));
+        Civili civ = new Civili(playerRes.get(RisorseEnum.CIVILI.name()));
+        Bitcoin bit = new Bitcoin(playerRes.get(RisorseEnum.BITCOIN.name()));
+        Acqua a = new Acqua(playerRes.get(RisorseEnum.ACQUA.name()));
+
+        PlayerRisorse pr = new PlayerRisorse(mc, met, ene, civ, bit, a);
+
+        List<RisorsaDto> risorseDto = RisorseMapper.mapToDto(pr);
+        return new ResponseEntity<>(risorseDto, HttpStatus.OK);
+    }
+
+    @Scheduled(fixedDelay = SAVE_RESOURCES_ON_DATABASE_INTERVAL)
+    private void savePlayerResourcesOnDatabase() {
+
+        Set<Long> playerIds = playerRepository.getAllPlayerId();
+        if (!playerIds.isEmpty()) {
+            for (Long playerId : playerIds) {
+
+                PlayerEntity player = playerRepository.findById(playerId).get();
+                PlayerRisorse pr = player.getPlayerRisorse();
+
+                Map<String, Double> playerRes = playerResources.get(playerId);
+
+                pr.getMicrochip().setQuantita(playerRes.get(RisorseEnum.MICROCHIP.name()));
+                pr.getMetallo().setQuantita(playerRes.get(RisorseEnum.METALLO.name()));
+                pr.getEnergia().setQuantita(playerRes.get(RisorseEnum.ENERGIA.name()));
+                pr.getCivili().setQuantita(playerRes.get(RisorseEnum.CIVILI.name()));
+                pr.getBitcoin().setQuantita(playerRes.get(RisorseEnum.BITCOIN.name()));
+                pr.getAcqua().setQuantita(playerRes.get(RisorseEnum.ACQUA.name()));
+
+                playerRepository.save(player);
+            }
         }
     }
 
-    private UserEntity getUserFromAuthorizationToken(String authorizationToken) {
-        String jwt = this.getJWTFromHeaderRequest(authorizationToken);
-        String username = jwtGenerator.extractUsername(jwt);
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        } else {
-            throw new UsernameNotFoundException("User not found");
+        private String getJWTFromHeaderRequest (String authorizationToken){
+            if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith("Bearer ")) {
+                return authorizationToken.substring(7);
+            } else {
+                return null;
+            }
+        }
+
+        private UserEntity getUserFromAuthorizationToken (String authorizationToken){
+            String jwt = this.getJWTFromHeaderRequest(authorizationToken);
+            String username = jwtGenerator.extractUsername(jwt);
+            Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
+            if (optionalUser.isPresent()) {
+                return optionalUser.get();
+            } else {
+                throw new UsernameNotFoundException("User not found");
+            }
         }
     }
-}

@@ -34,4 +34,12 @@ public class PlayerRisorse {
     @OneToOne(cascade = {CascadeType.ALL})
     private Microchip Microchip = new Microchip();
 
+    public PlayerRisorse(Microchip microchip, Metallo metallo, Energia energia, Civili civili, Bitcoin bitcoin, Acqua acqua ) {
+        this.metallo = metallo;
+        this.bitcoin = bitcoin;
+        this.Acqua = acqua;
+        this.Civili = civili;
+        this.Energia = energia;
+        this.Microchip = microchip;
+    }
 }
