@@ -7,12 +7,14 @@ import com.giancotsu.owar.entity.player.PlayerEntity;
 import com.giancotsu.owar.entity.player.PlayerRisorse;
 import com.giancotsu.owar.entity.player.PlayerSviluppo;
 import com.giancotsu.owar.entity.user.UserEntity;
+import com.giancotsu.owar.event.sviluppo.SviluppoUpEvent;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.BasicRepository;
 import com.giancotsu.owar.repository.player.PlayerRepository;
 import com.giancotsu.owar.repository.player.PlayerRisorseRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import com.giancotsu.owar.security.JWTGenerator;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,10 +34,11 @@ public class PlayerService {
     private final JWTGenerator jwtGenerator;
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static PlayerEntity loggedPlayer;
 
-    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository) {
+    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher) {
         this.playerRepository = playerRepository;
         this.basicRepository = basicRepository;
         this.playerRisorseRepository = playerRisorseRepository;
@@ -43,6 +46,7 @@ public class PlayerService {
         this.jwtGenerator = jwtGenerator;
         this.alzaLivelloTry = alzaLivelloTry;
         this.playerSviluppoRepository = playerSviluppoRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public ResponseEntity<PlayerEntity> getPlayer(String bearerToken) {
@@ -109,6 +113,7 @@ public class PlayerService {
                     if (risultato) {
                         ps.setLivello(livello + 1);
                         playerSviluppoRepository.save(ps);
+                        eventPublisher.publishEvent(new SviluppoUpEvent(this, ps));
                         return new ResponseEntity<>("success", HttpStatus.OK);
                     } else {
                         return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);

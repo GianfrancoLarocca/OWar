@@ -24,7 +24,8 @@ import java.util.*;
 @Service
 public class RisorseService {
 
-    private final int RESOURCE_UPDATE_INTERVAL = 1000 * 2; // Intervallo di aggiornamento delle risorse in millisecondi
+    private final int SECONDI = 1;
+    private final int RESOURCE_UPDATE_INTERVAL = 1000 * SECONDI; // Intervallo di aggiornamento delle risorse in millisecondi
     private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 60 * 60; // Intervallo di salvataggio delle risorse nel database in millisecondi
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
@@ -32,7 +33,10 @@ public class RisorseService {
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
+
     private final Map<Long, Map<String, Double>> playerResources = new HashMap<>();
+    private Set<Long> playerIds = new HashSet<>();
+    private Map<Long, Map<String, Double>> quantityToUpdate = new HashMap<>();
 
     public RisorseService(PlayerSviluppoRepository playerSviluppoRepository, PlayerRepository playerRepository, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
@@ -44,6 +48,10 @@ public class RisorseService {
     }
 
     public void addNewPlayerResources(UserEntity user) {
+
+        this.playerIds = playerRepository.getAllPlayerId();
+        this.initProdRes();
+
         Optional<PlayerEntity> optionalPlayer = playerRepository.findById(user.getPlayer().getId());
         if (optionalPlayer.isPresent()) {
             Map<String, Double> res = new HashMap<>();
@@ -59,7 +67,6 @@ public class RisorseService {
             res.put(RisorseEnum.ACQUA.name(), pr.getAcqua().getQuantita());
 
             playerResources.put(player.getId(), res);
-            System.err.println("addNewPlayerResources" + playerResources.get(player.getId()));
         }
     }
 
@@ -88,18 +95,21 @@ public class RisorseService {
     @Scheduled(fixedDelay = RESOURCE_UPDATE_INTERVAL)
     private void updatePlayersResources() {
 
-        Set<Long> playerIds = playerRepository.getAllPlayerId();
-        if (!playerIds.isEmpty()) {
+        if (!this.playerIds.isEmpty()) {
             for (Long playerId : playerIds) {
-                Map<String, Double> quantityToUpdate = this.getProductionResources(playerId);
-
                 playerResources.keySet().forEach(player -> {
                     playerResources.get(player).keySet().forEach(pr -> {
-                        playerResources.get(player).put(pr, playerResources.get(player).get(pr) + quantityToUpdate.get(pr));
+
+                        Double quantity = (quantityToUpdate.get(playerId).get(pr) / 60.0) * SECONDI;
+                        playerResources.get(player).put(pr, playerResources.get(player).get(pr) + quantity );
                     });
                 });
             }
         }
+    }
+
+    public void initProdRes() {
+        this.playerIds.forEach(this::getProductionResources);
     }
 
     //metodo che restituisce la produzione per ogni risorsa al minuto del player
@@ -117,6 +127,7 @@ public class RisorseService {
                 valoreAttuale = prod.get(p.getRisorsa());
             }
             prod.put(p.getRisorsa(), (p.getProduzione() * p.getLivello() * (Math.pow(p.getMoltiplicatore(), p.getLivello()))) + valoreAttuale);
+            this.quantityToUpdate.put(playerId, prod);
         });
 
         return prod;
