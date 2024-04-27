@@ -38,6 +38,7 @@ public class RisorseService {
         this.jwtGenerator = jwtGenerator;
     }
 
+    //metodo che aggiorna le risorse ogni 10 secondi di tutti i player
     @Scheduled(fixedDelay = RESOURCE_UPDATE_INTERVAL)
     public void updateResources() {
 
@@ -75,6 +76,7 @@ public class RisorseService {
         }
     }
 
+    //metodo che restituisce la produzione al minuto di ogni risorsa del player
     public ResponseEntity<List<ProduzioneRisorseDto>> getProductionResources(String bearerToken) {
 
         Map<String, Double> prod = new HashMap<>();
