@@ -9,7 +9,7 @@ public class Microchip extends Risorsa {
 
 
     public Microchip() {
-        super(RisorseEnum.MICROCHIP.name(), "Pezzi", 0.0, "../../assets/img/risorse/microchip.png");
+        super(RisorseEnum.MICROCHIP.name(), "Pezzi", 80000.0, "../../assets/img/risorse/microchip.png");
     }
 
     public Microchip( Double quantity) {

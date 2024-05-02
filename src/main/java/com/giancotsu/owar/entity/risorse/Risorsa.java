@@ -68,7 +68,7 @@ public abstract class Risorsa {
     }
 
     public String value() {
-        String q = String.format(Locale.ITALY, "%.0f", quantita);
+        String q = String.format(Locale.ITALY, "%,.0f", quantita);
         return "%s %s".formatted(q, unitaMisura);
     }
 

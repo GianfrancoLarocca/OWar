@@ -2,17 +2,12 @@ package com.giancotsu.owar.service.player;
 
 import com.giancotsu.owar.dto.RisorsaDto;
 import com.giancotsu.owar.dto.map.RisorseMapper;
-import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
-import com.giancotsu.owar.entity.player.PlayerEntity;
-import com.giancotsu.owar.entity.player.PlayerRisorse;
-import com.giancotsu.owar.entity.player.PlayerSviluppo;
+import com.giancotsu.owar.entity.player.*;
 import com.giancotsu.owar.entity.user.UserEntity;
-import com.giancotsu.owar.event.sviluppo.SviluppoUpEvent;
+import com.giancotsu.owar.event.sviluppo.SviluppoTryLvlUpFailEvent;
+import com.giancotsu.owar.event.sviluppo.SviluppoTryLvlUpSuccessEvent;
 import com.giancotsu.owar.repository.UserRepository;
-import com.giancotsu.owar.repository.player.BasicRepository;
-import com.giancotsu.owar.repository.player.PlayerRepository;
-import com.giancotsu.owar.repository.player.PlayerRisorseRepository;
-import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
+import com.giancotsu.owar.repository.player.*;
 import com.giancotsu.owar.security.JWTGenerator;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -31,6 +26,8 @@ public class PlayerService {
     private final BasicRepository basicRepository;
     private final PlayerRisorseRepository playerRisorseRepository;
     private final UserRepository userRepository;
+    private final AttivitaRepository attivitaRepository;
+    private final CostiService costiService;
     private final JWTGenerator jwtGenerator;
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
@@ -38,11 +35,13 @@ public class PlayerService {
 
     private static PlayerEntity loggedPlayer;
 
-    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher) {
+    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher) {
         this.playerRepository = playerRepository;
         this.basicRepository = basicRepository;
         this.playerRisorseRepository = playerRisorseRepository;
         this.userRepository = userRepository;
+        this.attivitaRepository = attivitaRepository;
+        this.costiService = costiService;
         this.jwtGenerator = jwtGenerator;
         this.alzaLivelloTry = alzaLivelloTry;
         this.playerSviluppoRepository = playerSviluppoRepository;
@@ -62,12 +61,30 @@ public class PlayerService {
 
     public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformation(String bearerToken) {
 
-                Optional<PlayerBasicInformationEntity> basic = basicRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        Optional<PlayerBasicInformationEntity> basic = basicRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
         if (basic.isPresent()) {
             return new ResponseEntity<>(basic.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<List<Attivita>> getRegistroAttivita(String bearerToken) {
+        Optional<List<Attivita>> attivita = attivitaRepository.getAttivitaByPlayerId(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if(attivita.isPresent()) {
+            return new ResponseEntity<>(attivita.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public void setNewActivity(PlayerEntity player, String activity, String description) {
+        RegistroAttivita ra = player.getRegistroAttivita();
+        Attivita attivita = new Attivita(activity, description);
+        attivita.setRegistroAttivita(player.getRegistroAttivita());
+
+        player.getRegistroAttivita().getAttivita().add(attivita);
+        playerRepository.save(player);
     }
 
     @Deprecated
@@ -107,15 +124,20 @@ public class PlayerService {
             if (ops.isPresent()) {
                 PlayerSviluppo ps = ops.get();
                 if (player.getId() == ps.getPlayer().getId()) {
-
+                    if (!costiService.canPay(sviluppoId, authorizationToken)) {
+                        return new ResponseEntity<>("No money", HttpStatus.BAD_REQUEST);
+                    }
+                    costiService.pay(sviluppoId, authorizationToken);
                     int livello = ps.getLivello();
                     boolean risultato = alzaLivelloTry.alzaLivello(livello);
+                    //evento: tentativo di alzare il livello
                     if (risultato) {
                         ps.setLivello(livello + 1);
                         playerSviluppoRepository.save(ps);
-                        eventPublisher.publishEvent(new SviluppoUpEvent(this, ps));
+                        eventPublisher.publishEvent(new SviluppoTryLvlUpSuccessEvent(this, player, ps));
                         return new ResponseEntity<>("success", HttpStatus.OK);
                     } else {
+                        eventPublisher.publishEvent(new SviluppoTryLvlUpFailEvent(this, player, ps));
                         return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
                     }
                 } else {

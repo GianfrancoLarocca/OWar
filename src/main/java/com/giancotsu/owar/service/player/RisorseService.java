@@ -36,7 +36,7 @@ public class RisorseService {
 
     private final Map<Long, Map<String, Double>> playerResources = new HashMap<>();
     private Set<Long> playerIds = new HashSet<>();
-    private Map<Long, Map<String, Double>> quantityToUpdate = new HashMap<>();
+    private final Map<Long, Map<String, Double>> quantityToUpdate = new HashMap<>();
 
     public RisorseService(PlayerSviluppoRepository playerSviluppoRepository, PlayerRepository playerRepository, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
@@ -45,6 +45,7 @@ public class RisorseService {
         this.jwtGenerator = jwtGenerator;
 
         this.extractPlayersResourcesFromDb();
+        this.initProdRes();
     }
 
     public void addNewPlayerResources(UserEntity user) {
@@ -73,10 +74,12 @@ public class RisorseService {
     private void extractPlayersResourcesFromDb() {
         Set<Long> playerIds = playerRepository.getAllPlayerId();
         if (!playerIds.isEmpty()) {
-            Map<String, Double> res = new HashMap<>();
             for (Long playerId : playerIds) {
+
                 PlayerEntity player = playerRepository.findById(playerId).get();
                 PlayerRisorse pr = player.getPlayerRisorse();
+
+                Map<String, Double> res = new HashMap<>();
 
                 res.put(RisorseEnum.MICROCHIP.name(), pr.getMicrochip().getQuantita());
                 res.put(RisorseEnum.METALLO.name(), pr.getMetallo().getQuantita());
@@ -97,15 +100,16 @@ public class RisorseService {
 
         if (!this.playerIds.isEmpty()) {
             for (Long playerId : playerIds) {
-                    playerResources.get(playerId).keySet().forEach(pr -> {
-                        Double quantity = (quantityToUpdate.get(playerId).get(pr) / 60.0) * SECONDI;
-                        playerResources.get(playerId).put(pr, playerResources.get(playerId).get(pr) + quantity );
-                    });
+                playerResources.get(playerId).keySet().forEach(pr -> {
+                    Double quantity = (quantityToUpdate.get(playerId).get(pr) / 60.0) * SECONDI;
+                    playerResources.get(playerId).put(pr, playerResources.get(playerId).get(pr) + quantity);
+                });
             }
         }
     }
 
     public void initProdRes() {
+        this.playerIds = playerRepository.getAllPlayerId();
         this.playerIds.forEach(this::getProductionResources);
     }
 
@@ -152,7 +156,7 @@ public class RisorseService {
     }
 
     //metodo che restituisce le risorse del player che ha fatto la richiesta
-    public ResponseEntity<List<RisorsaDto>> getPlayerResources(String bearerToken) {
+    public ResponseEntity<List<RisorsaDto>> getPlayerResourcesDto(String bearerToken) {
 
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
 
@@ -171,13 +175,26 @@ public class RisorseService {
         return new ResponseEntity<>(risorseDto, HttpStatus.OK);
     }
 
+    public Map<String, Double> getPlayerResources(Long playerId) {
+        return playerResources.get(playerId);
+    }
+
+    public boolean payment(Map<String, Double> costi, Long playerId) {
+
+        Map<String, Double> playerRes = playerResources.get(playerId);
+        costi.keySet().forEach(risorsa -> {
+            playerRes.put(risorsa, playerRes.get(risorsa) - costi.get(risorsa));
+        });
+        playerResources.put(playerId, playerRes);
+        return true;
+    }
+
     @Scheduled(fixedDelay = SAVE_RESOURCES_ON_DATABASE_INTERVAL)
     private void savePlayerResourcesOnDatabase() {
 
         Set<Long> playerIds = playerRepository.getAllPlayerId();
         if (!playerIds.isEmpty()) {
             for (Long playerId : playerIds) {
-                //System.err.println("playerId: " + playerId);
 
                 PlayerEntity player = playerRepository.findById(playerId).get();
                 PlayerRisorse pr = player.getPlayerRisorse();
@@ -191,35 +208,33 @@ public class RisorseService {
                 pr.getBitcoin().setQuantita(playerRes.get(RisorseEnum.BITCOIN.name()));
                 pr.getAcqua().setQuantita(playerRes.get(RisorseEnum.ACQUA.name()));
 
-                //System.err.println("pr mc: " + pr.getCivili().getQuantita());
-
                 playerRepository.save(player);
             }
         }
     }
 
-        private String getJWTFromHeaderRequest (String authorizationToken){
-            if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith("Bearer ")) {
-                return authorizationToken.substring(7);
-            } else {
-                return null;
-            }
-        }
-
-        private UserEntity getUserFromAuthorizationToken (String authorizationToken){
-            String jwt = this.getJWTFromHeaderRequest(authorizationToken);
-            String username = jwtGenerator.extractUsername(jwt);
-            Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
-            if (optionalUser.isPresent()) {
-                return optionalUser.get();
-            } else {
-                throw new UsernameNotFoundException("User not found");
-            }
-        }
-
-        private Long getPlayerIdByAuthorizationToken (String authorizationToken) {
-            String jwt = this.getJWTFromHeaderRequest(authorizationToken);
-            String username = jwtGenerator.extractUsername(jwt);
-            return userRepository.getPlayerIdByUsername(username);
+    private String getJWTFromHeaderRequest(String authorizationToken) {
+        if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith("Bearer ")) {
+            return authorizationToken.substring(7);
+        } else {
+            return null;
         }
     }
+
+    private Long getPlayerIdByAuthorizationToken(String authorizationToken) {
+        String jwt = this.getJWTFromHeaderRequest(authorizationToken);
+        String username = jwtGenerator.extractUsername(jwt);
+        return userRepository.getPlayerIdByUsername(username);
+    }
+
+    private UserEntity getUserFromAuthorizationToken(String authorizationToken) {
+        String jwt = this.getJWTFromHeaderRequest(authorizationToken);
+        String username = jwtGenerator.extractUsername(jwt);
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
+    }
+}

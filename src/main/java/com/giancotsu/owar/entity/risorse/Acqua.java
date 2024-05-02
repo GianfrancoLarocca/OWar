@@ -8,7 +8,7 @@ public class Acqua extends Risorsa {
 
 
     public Acqua() {
-        super(RisorseEnum.ACQUA.name(), "LT", 0.0, "../../assets/img/risorse/water.png");
+        super(RisorseEnum.ACQUA.name(), "LT", 80000.0, "../../assets/img/risorse/water.png");
     }
 
     public Acqua(Double quantity) {

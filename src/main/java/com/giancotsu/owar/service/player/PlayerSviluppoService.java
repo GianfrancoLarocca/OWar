@@ -29,14 +29,16 @@ public class PlayerSviluppoService {
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
     private final AlzaLivelloTry alzaLivelloTry;
+    private final CostiService costiService;
 
 
-    public PlayerSviluppoService(PlayerSviluppoRepository playerSviluppoRepository, SviluppoRepository sviluppoRepository, UserRepository userRepository, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry) {
+    public PlayerSviluppoService(PlayerSviluppoRepository playerSviluppoRepository, SviluppoRepository sviluppoRepository, UserRepository userRepository, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, CostiService costiService) {
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.sviluppoRepository = sviluppoRepository;
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
         this.alzaLivelloTry = alzaLivelloTry;
+        this.costiService = costiService;
         this.creaStrutture();
     }
 
@@ -606,10 +608,12 @@ public class PlayerSviluppoService {
         sviluppoCompletoDto.setLivello(livelloStruttura);
         sviluppoCompletoDto.setChance(String.format("%.0f", alzaLivelloTry.getPercentualeSuccesso(livelloStruttura)));
 
-        Map<String, Double> costi = new HashMap<>();
-        costiProjection.forEach(p -> {
-            costi.put(p.getRisorsa(), p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello() - 1.0)));
-        });
+//        Map<String, Double> costi = new HashMap<>();
+//        costiProjection.forEach(p -> {
+//            costi.put(p.getRisorsa(), p.getCosto() * (Math.pow(p.getMoltiplicatore(), p.getLivello() - 1.0)));
+//        });
+
+        Map<String, Double> costi = costiService.getCostiStruttura(sviluppo.getId(), playerId);
         sviluppoCompletoDto.setCosti(costi);
 
         List<SviluppoProduzioneRisorseProjection> produzioneProjection = playerSviluppoRepository.getProduzioneRisorseSviluppo(playerId, sviluppo.getId());

@@ -28,14 +28,19 @@ public class PlayerEntity {
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference
+    private RegistroAttivita registroAttivita;
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JsonManagedReference
     private PlayerRisorse playerRisorse;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
     @JsonIgnore
     private List<PlayerSviluppo> playerSviluppo;
 
     public PlayerEntity() {
         this.playerRisorse = new PlayerRisorse();
+        this.registroAttivita = new RegistroAttivita();
     }
 
 
