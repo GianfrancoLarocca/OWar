@@ -5,8 +5,6 @@ import com.giancotsu.owar.projection.SviluppoCostiProjection;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import com.giancotsu.owar.security.JWTGenerator;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -69,10 +67,43 @@ public class CostiService {
         return true;
     }
 
-    public boolean pay(Long strutturaId, String bearerToken) {
+    public void pay(Long strutturaId, String bearerToken) {
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
         risorseService.payment(getCostiStruttura(strutturaId, playerId), playerId);
-        return false;
+    }
+
+    public Double convertCostToExp(Long strutturaId, String bearerToken) {
+
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+
+        Double exp = 0.0;
+
+        Map<String, Double> strutturaCosti = getCostiStruttura(strutturaId, playerId);
+
+        for (String risorsa : strutturaCosti.keySet()) {
+            switch (risorsa) {
+                case "BITCOIN":
+                    exp += strutturaCosti.get(risorsa) * 0.05;
+                    break;
+                case "MICROCHIP":
+                    exp += strutturaCosti.get(risorsa) * 0.08;
+                    break;
+                case "METALLO":
+                    exp += strutturaCosti.get(risorsa) * 0.1;
+                    break;
+                case "ENERGIA":
+                    exp += strutturaCosti.get(risorsa) * 0.5;
+                    break;
+                case "CIVILI":
+                    exp += strutturaCosti.get(risorsa) * 1.5;
+                    break;
+                case "ACQUA":
+                    exp += strutturaCosti.get(risorsa) * 10.9;
+                    break;
+            }
+        }
+
+        return exp;
     }
 
     private String getJWTFromHeaderRequest(String authorizationToken) {

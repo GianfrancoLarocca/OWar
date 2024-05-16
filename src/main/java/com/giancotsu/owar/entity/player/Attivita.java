@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
@@ -18,7 +17,8 @@ public class Attivita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private ZonedDateTime data;
+//    private ZonedDateTime data;
+    private LocalDateTime data;
     private String azione;
     private String descrizione;
 
@@ -31,15 +31,16 @@ public class Attivita {
         this.azione = azione;
         this.descrizione = descrizione;
 
-        this.data = ZonedDateTime.now(ZoneId.of("Europe/Rome"));
+//        this.data = ZonedDateTime.now(ZoneId.of("Europe/Rome"));
+        this.data = LocalDateTime.now();
     }
 
     public String getData() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss z");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         return data.format(formatter);
     }
 
-    public void setData(ZonedDateTime data) {
+    public void setData(LocalDateTime data) {
         this.data = data;
     }
 

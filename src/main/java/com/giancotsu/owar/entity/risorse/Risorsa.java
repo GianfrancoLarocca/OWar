@@ -40,9 +40,9 @@ public abstract class Risorsa {
         } else if(quantita>999 && quantita<1000000) {
             quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000.0), "k");
         } else if(quantita>999999 && quantita<1000000000) {
-            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000000.0), "M");
         } else if (quantita>999999999  && quantita<1000000000000L) {
-            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000000000.0), "Bn");
         } else if (quantita>999999999999L){
             quantitaShort = quantita.toString();
         }
@@ -57,9 +57,9 @@ public abstract class Risorsa {
         } else if(quantita>999 && quantita<1000000) {
             quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000.0), "k");
         } else if(quantita>999999 && quantita<1000000000) {
-            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000.0), "M");
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000000.0), "M");
         } else if (quantita>999999999 && quantita<1000000000000L) {
-            quantitaShort = String.format(Locale.ITALY, "%.3f %s", (quantita/1000000000.0), "Bn");
+            quantitaShort = String.format(Locale.ITALY, "%.1f %s", (quantita/1000000000.0), "Bn");
         } else if (quantita>999999999999L){
             quantitaShort = "WOW";
         }

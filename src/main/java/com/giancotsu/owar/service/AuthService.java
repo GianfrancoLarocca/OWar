@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -104,7 +105,7 @@ public class AuthService {
         newUser.setActivationCode(Integer.toString(randomActivationCode));
 
         PlayerEntity player = new PlayerEntity();
-        player.setBasicInformation(new PlayerBasicInformationEntity(newUser.getUsername()));
+        player.setBasicInformation(new PlayerBasicInformationEntity(newUser.getUsername(), LocalDateTime.now()));
         newUser.setPlayer(player);
         System.err.println(player);
         UserEntity savedUser = userRepository.save(newUser);

@@ -8,10 +8,13 @@ public class SviluppoTryLvlUpSuccessEvent extends ApplicationEvent {
 
     private PlayerSviluppo ps;
     private PlayerEntity player;
-    public SviluppoTryLvlUpSuccessEvent(Object source, PlayerEntity player, PlayerSviluppo ps) {
+    private Double exp;
+
+    public SviluppoTryLvlUpSuccessEvent(Object source, PlayerEntity player, PlayerSviluppo ps, Double exp) {
         super(source);
         this.ps = ps;
         this.player = player;
+        this.exp = exp;
     }
 
     public PlayerSviluppo getPs() {
@@ -20,5 +23,9 @@ public class SviluppoTryLvlUpSuccessEvent extends ApplicationEvent {
 
     public PlayerEntity getPlayer() {
         return player;
+    }
+
+    public Double getExp() {
+        return exp;
     }
 }

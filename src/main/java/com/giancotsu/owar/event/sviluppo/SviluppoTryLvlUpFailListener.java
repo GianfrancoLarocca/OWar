@@ -24,8 +24,8 @@ public class SviluppoTryLvlUpFailListener implements ApplicationListener<Svilupp
         if(nomeStruttura.isPresent()) {
             int livello = event.getPs().getLivello();
             playerService.setNewActivity(event.getPlayer(), "Tentativo di alzare il livello",
-                    String.format("Hai tentato di alzare il livello della struttura \"%s\" al livello %d, ma hai fallito! Il livello della struttura è ancora %d."
-                            , nomeStruttura.get(), livello + 1, livello));
+                    String.format("Hai tentato di alzare il livello della struttura \"%s\" al livello %d, ma hai fallito! Il livello della struttura è ancora %d.",
+                            nomeStruttura.get(), livello + 1, livello));
         } else {
             throw new RuntimeException("Struttura non trovata");
         }

@@ -10,7 +10,7 @@ public class Civili extends Risorsa {
 
 
     public Civili() {
-        super(RisorseEnum.CIVILI.name(), "Persone", 80000.0, "../../assets/img/risorse/people.png");
+        super(RisorseEnum.CIVILI.name(), "Persone", 10000000000.0, "../../assets/img/risorse/people.png");
     }
 
     public Civili(Double quantity) {

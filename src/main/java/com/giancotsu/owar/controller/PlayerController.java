@@ -11,6 +11,7 @@ import com.giancotsu.owar.service.player.CostiService;
 import com.giancotsu.owar.service.player.PlayerService;
 import com.giancotsu.owar.service.player.PlayerSviluppoService;
 import com.giancotsu.owar.service.player.RisorseService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ public class PlayerController {
     private final PlayerSviluppoService playerSviluppoService;
     private final RisorseService risorseService;
     private final CostiService costiService;
+
+
 
     public PlayerController(PlayerService playerService, PlayerSviluppoService playerSviluppoService, RisorseService risorseService, CostiService costiService) {
         this.playerService = playerService;
@@ -43,9 +46,19 @@ public class PlayerController {
         return this.playerService.getPlayerBasicInformation(bearerToken);
     }
 
+    @GetMapping(value = "basic/{nickname}")
+    public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformationByNickname(@PathVariable("nickname") String nickname) {
+        return this.playerService.getPlayerBasicInformationByNickname(nickname);
+    }
+
     @GetMapping(value = "registro-attivita")
     public ResponseEntity<List<Attivita>> getRegistroAttivita(@RequestHeader("Authorization") String bearerToken) {
         return this.playerService.getRegistroAttivita(bearerToken);
+    }
+
+    @GetMapping(value = "registro-attivita/{pageNumber}/{pageSize}")
+    public ResponseEntity<Page<Attivita>> getRegistroAttivitaPageable(@RequestHeader("Authorization") String bearerToken, @PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize) {
+        return this.playerService.getRegistroAttivitaPageable(bearerToken, pageNumber, pageSize);
     }
 
     @GetMapping(value = "risorse")
@@ -56,6 +69,11 @@ public class PlayerController {
     @GetMapping(value = "strutture")
     public ResponseEntity<List<AllBasicBuildingsInfoDto>> getAllBasicBuildingsInfo(@RequestHeader("Authorization") String bearerToken) {
         return this.playerSviluppoService.getAllBasicBuildingsInfo(bearerToken);
+    }
+
+    @GetMapping(value = "strutture/{nickname}")
+    public ResponseEntity<List<AllBasicBuildingsInfoDto>> getAllBasicBuildingsInfoByPlayerNickname(@PathVariable("nickname") String nickname) {
+        return this.playerSviluppoService.getAllBasicBuildingsInfoByPlayerNickname(nickname);
     }
 
     @GetMapping(value = "strutture/id/{sviluppoId}")

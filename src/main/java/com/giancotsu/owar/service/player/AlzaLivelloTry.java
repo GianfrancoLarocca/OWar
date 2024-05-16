@@ -33,6 +33,7 @@ public class AlzaLivelloTry {
             this.percentualeSuccesso = 0.5;
         }
 
+//        this.percentualeSuccesso = 100.0;
         return this.percentualeSuccesso;
     }
 

@@ -10,6 +10,9 @@ import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.*;
 import com.giancotsu.owar.security.JWTGenerator;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,8 +35,6 @@ public class PlayerService {
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final ApplicationEventPublisher eventPublisher;
-
-    private static PlayerEntity loggedPlayer;
 
     public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher) {
         this.playerRepository = playerRepository;
@@ -61,25 +62,79 @@ public class PlayerService {
 
     public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformation(String bearerToken) {
 
-        Optional<PlayerBasicInformationEntity> basic = basicRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
-        if (basic.isPresent()) {
-            return new ResponseEntity<>(basic.get(), HttpStatus.OK);
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            return new ResponseEntity<>(player.get().getBasicInformation(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformationByNickname(String nickname) {
+
+        Optional<PlayerBasicInformationEntity> playerBasic = basicRepository.findByNickname(nickname);
+        if (playerBasic.isPresent()) {
+            return new ResponseEntity<>(playerBasic.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    //Exp(n)=Base×(Livello×Fattore)
+    //Exp(n) = Base * Math.pow(Fattore, livello - 1.0);
+    public PlayerBasicInformationEntity increasePlayerLvl(PlayerEntity player, Double exp) {
+
+
+        PlayerBasicInformationEntity basicInformation = player.getBasicInformation();
+        PlayerEntity updatedPlayer;
+        int livello = basicInformation.getLivello();
+        Double experience = basicInformation.getExp();
+        Double expBase = basicInformation.getExpBase();
+        Double expFactor = basicInformation.getExpFactor();
+        Double expNextLevel = basicInformation.getExpNextLevel();
+        Double expTot = basicInformation.getExpTot();
+
+        if (experience + exp >= expNextLevel) {
+            while (experience + exp >= expNextLevel) {
+                livello++;
+                double expStartLvl = expBase * Math.pow(expFactor, livello - 1.0);
+                basicInformation.setLivello(livello);
+                expNextLevel = expBase * Math.pow(expFactor, livello);
+                basicInformation.setExpStartLvl(expStartLvl);
+                basicInformation.setExpNextLevel(expNextLevel);
+                basicInformation.setExp((experience + exp) - expStartLvl);
+            }
+        } else {
+            basicInformation.setExp(experience + exp);
+        }
+
+        basicInformation.setExpTot(expTot + exp);
+        player.setBasicInformation(basicInformation);
+        updatedPlayer = playerRepository.save(player);
+
+        return updatedPlayer.getBasicInformation();
+
     }
 
     public ResponseEntity<List<Attivita>> getRegistroAttivita(String bearerToken) {
-        Optional<List<Attivita>> attivita = attivitaRepository.getAttivitaByPlayerId(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
-        if(attivita.isPresent()) {
-            return new ResponseEntity<>(attivita.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
+        List<Attivita> attivita = attivitaRepository.getAttivitaByPlayerId(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+
+        return new ResponseEntity<>(attivita, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<Page<Attivita>> getRegistroAttivitaPageable(String bearerToken, int pageNumber, int pageSize) {
+
+        long playerId = getUserFromAuthorizationToken(bearerToken).getPlayer().getId();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Attivita> attivita = attivitaRepository.getAttivitaByPlayerIdPageable(playerId, pageable);
+
+        return new ResponseEntity<>(attivita, HttpStatus.OK);
+
     }
 
     public void setNewActivity(PlayerEntity player, String activity, String description) {
-        RegistroAttivita ra = player.getRegistroAttivita();
         Attivita attivita = new Attivita(activity, description);
         attivita.setRegistroAttivita(player.getRegistroAttivita());
 
@@ -134,7 +189,8 @@ public class PlayerService {
                     if (risultato) {
                         ps.setLivello(livello + 1);
                         playerSviluppoRepository.save(ps);
-                        eventPublisher.publishEvent(new SviluppoTryLvlUpSuccessEvent(this, player, ps));
+                        Double exp = costiService.convertCostToExp(sviluppoId, authorizationToken);
+                        eventPublisher.publishEvent(new SviluppoTryLvlUpSuccessEvent(this, player, ps, exp));
                         return new ResponseEntity<>("success", HttpStatus.OK);
                     } else {
                         eventPublisher.publishEvent(new SviluppoTryLvlUpFailEvent(this, player, ps));

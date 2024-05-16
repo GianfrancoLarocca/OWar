@@ -1,6 +1,7 @@
 package com.giancotsu.owar.event.user;
 
 import com.giancotsu.owar.entity.user.UserEntity;
+import com.giancotsu.owar.service.player.ClassificaService;
 import com.giancotsu.owar.service.player.PlayerService;
 import com.giancotsu.owar.service.player.RisorseService;
 import org.springframework.context.ApplicationListener;
@@ -11,10 +12,12 @@ public class UserRegisteredListener implements ApplicationListener<UserRegistere
 
     private final RisorseService risorseService;
     private final PlayerService playerService;
+    private final ClassificaService classificaService;
 
-    public UserRegisteredListener(RisorseService risorseService, PlayerService playerService) {
+    public UserRegisteredListener(RisorseService risorseService, PlayerService playerService, ClassificaService classificaService) {
         this.risorseService = risorseService;
         this.playerService = playerService;
+        this.classificaService = classificaService;
     }
 
     @Override
@@ -22,5 +25,6 @@ public class UserRegisteredListener implements ApplicationListener<UserRegistere
         UserEntity user = event.getUser();
         risorseService.addNewPlayerResources(user);
         playerService.setNewActivity(user.getPlayer(), "Registrazione", "Ti sei registrato su OWAR");
+        classificaService.extractAllClassifica();
     }
 }

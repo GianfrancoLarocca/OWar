@@ -9,7 +9,7 @@ public class Energia extends Risorsa {
 
 
     public Energia() {
-        super(RisorseEnum.ENERGIA.name(), "KJ", 80000.0, "../../assets/img/risorse/energy.png");
+        super(RisorseEnum.ENERGIA.name(), "KJ", 10000000000.0, "../../assets/img/risorse/energy.png");
     }
 
     public Energia(Double quantity) {

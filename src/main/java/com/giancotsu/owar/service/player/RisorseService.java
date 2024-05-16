@@ -26,7 +26,7 @@ public class RisorseService {
 
     private final int SECONDI = 1;
     private final int RESOURCE_UPDATE_INTERVAL = 1000 * SECONDI; // Intervallo di aggiornamento delle risorse in millisecondi
-    private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 60;// * 60; // Intervallo di salvataggio delle risorse nel database in millisecondi
+    private final int SAVE_RESOURCES_ON_DATABASE_INTERVAL = 1000 * 20; // Intervallo di salvataggio delle risorse nel database in millisecondi
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerRepository playerRepository;
@@ -179,14 +179,13 @@ public class RisorseService {
         return playerResources.get(playerId);
     }
 
-    public boolean payment(Map<String, Double> costi, Long playerId) {
+    public void payment(Map<String, Double> costi, Long playerId) {
 
         Map<String, Double> playerRes = playerResources.get(playerId);
         costi.keySet().forEach(risorsa -> {
             playerRes.put(risorsa, playerRes.get(risorsa) - costi.get(risorsa));
         });
         playerResources.put(playerId, playerRes);
-        return true;
     }
 
     @Scheduled(fixedDelay = SAVE_RESOURCES_ON_DATABASE_INTERVAL)

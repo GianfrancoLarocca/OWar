@@ -35,5 +35,7 @@ public class SviluppoTryLvlUpSuccessListener implements ApplicationListener<Svil
         } else {
             throw new RuntimeException("Struttura non trovata");
         }
+
+        playerService.increasePlayerLvl(event.getPlayer(), event.getExp());
     }
 }
