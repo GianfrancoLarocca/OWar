@@ -144,7 +144,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(authRequestDto.getUsername(), authRequestDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = tokenGenerator.generateToken(authentication);
+        String token = tokenGenerator.generateToken(authentication, authRequestDto.getExpTime());
         Date exp = tokenGenerator.extractExpiration(token);
 
         AuthResponseDto authResponse = new AuthResponseDto();

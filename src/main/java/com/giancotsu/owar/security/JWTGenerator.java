@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -17,6 +20,7 @@ import java.util.function.Function;
 public class JWTGenerator {
 
     private final long JWT_EXPIRATION = 1000 * 60 * 60 * 24L; // 24 hours
+    private final long JWT_EXPIRATION_LONG = 1000 * 60 * 60 * 24 * 7L; // 1 week
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
@@ -25,12 +29,23 @@ public class JWTGenerator {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, String expTime) {
+
+        LocalDateTime exp;
+
+        if(expTime.equals("week")) {
+            exp = LocalDateTime.now().plus(JWT_EXPIRATION_LONG, ChronoUnit.MILLIS).plusHours(2);
+        } else {
+            exp = LocalDateTime.now().plus(JWT_EXPIRATION, ChronoUnit.MILLIS).plusHours(2);
+        }
+
+
         return Jwts
                 .builder()
                 .subject(authentication.getName())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                //.expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                .expiration(Date.from(exp.atZone(ZoneId.of("Europe/Rome")).toInstant()))
                 .signWith(getSigninKey())
                 .compact();
     }
