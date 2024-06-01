@@ -1,5 +1,7 @@
 package com.giancotsu.owar.service.player;
 
+import com.giancotsu.owar.entity.player.Notification;
+import com.giancotsu.owar.entity.player.FriendRequest;
 import com.giancotsu.owar.dto.RisorsaDto;
 import com.giancotsu.owar.dto.map.RisorseMapper;
 import com.giancotsu.owar.entity.player.*;
@@ -15,12 +17,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PlayerService {
@@ -35,8 +41,11 @@ public class PlayerService {
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final FriendRequestRepository friendRequestRepository;
+    private final NotificationRepository notificationRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher) {
+    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, ApplicationEventPublisher eventPublisher, FriendRequestRepository friendRequestRepository, NotificationRepository notificationRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.playerRepository = playerRepository;
         this.basicRepository = basicRepository;
         this.playerRisorseRepository = playerRisorseRepository;
@@ -47,6 +56,9 @@ public class PlayerService {
         this.alzaLivelloTry = alzaLivelloTry;
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.eventPublisher = eventPublisher;
+        this.friendRequestRepository = friendRequestRepository;
+        this.notificationRepository = notificationRepository;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     public ResponseEntity<PlayerEntity> getPlayer(String bearerToken) {
@@ -70,11 +82,183 @@ public class PlayerService {
         }
     }
 
+    public ResponseEntity<List<PlayerEntity>> findPlayerByNickname(String nickname) {
+        return new ResponseEntity<>(this.playerRepository.findPlayerByNickname(nickname), HttpStatus.OK);
+    }
+
     public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformationByNickname(String nickname) {
 
         Optional<PlayerBasicInformationEntity> playerBasic = basicRepository.findByNickname(nickname);
         if (playerBasic.isPresent()) {
             return new ResponseEntity<>(playerBasic.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Boolean> sendFriendRequest(String bearerToken, long receiverId) {
+
+        Optional<PlayerEntity> optionalSender = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        Optional<PlayerEntity> optionalReceiver = playerRepository.findById(receiverId);
+
+        if(optionalSender.isPresent() && optionalReceiver.isPresent()) {
+
+            PlayerEntity sender = optionalSender.get();
+            String senderNickname = sender.getBasicInformation().getNickname();
+            PlayerEntity receiver = optionalReceiver.get();
+
+            Optional<List<FriendRequest>> fr = friendRequestRepository.alreadyExists(sender.getId(), receiverId);
+            if(fr.isPresent() && (!fr.get().isEmpty())) {
+                    return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
+
+            FriendRequest friendRequest = new FriendRequest();
+            friendRequest.setSender(sender.getId());
+            friendRequest.setReceiver(receiverId);
+            friendRequestRepository.save(friendRequest);
+
+            String destination = "/topic/notification/" + receiverId;
+            Notification not = new Notification(senderNickname, optionalReceiver.get().getBasicInformation().getNickname(), String.format("Hai una nuova richiesta d'amicizia da parte di %s", senderNickname));
+            not.setData(LocalDateTime.now());
+            not.setTitle("Nuova richiesta amico");
+            not.setPlayer(receiver);
+            not.setSenderId(sender.getId());
+            not.setNotificationType("friend-request");
+            simpMessagingTemplate.convertAndSend(destination, not);
+
+            receiver.getContatori().incrementaContatoreNotifiche();
+            playerRepository.save(receiver);
+
+            List<Notification> notifications = new ArrayList<>(sender.getNotifications());
+            notifications.add(not);
+            sender.setNotifications(notifications);
+            playerRepository.save(sender);
+
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<Boolean> friendRequestChose(String bearerToken, long id) {
+        Optional<PlayerEntity> optionalPlayer = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if(optionalPlayer.isPresent()) {
+            PlayerEntity player = optionalPlayer.get();
+            player.getSceltaRichiestaAmici().add(id);
+            System.err.println("Sto aggiungendo un nuovo player alle scelte: " + player.getSceltaRichiestaAmici().get(0));
+            playerRepository.save(player);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<Boolean> addFriend(String bearerToken, long friendId) {
+
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        Optional<PlayerEntity> friend = playerRepository.findById(friendId);
+        if (player.isPresent() && friend.isPresent()) {
+
+            PlayerEntity p = player.get();
+            PlayerEntity f = friend.get();
+
+            if(p.equals(f)) {
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
+
+            p.addFriend(f);
+
+            String playerNickname = p.getBasicInformation().getNickname();
+            String destination = "/topic/notification/" + friendId;
+            Notification not = new Notification(playerNickname, f.getBasicInformation().getNickname(), String.format("%s Ha accettato la tua richiesta di amicizia! ", playerNickname));
+            not.setData(LocalDateTime.now());
+            not.setTitle("Hai nuovo amico");
+            not.setPlayer(f);
+            not.setSenderId(p.getId());
+            not.setNotificationType("friend-request-accepted");
+            simpMessagingTemplate.convertAndSend(destination, not);
+
+            f.getContatori().incrementaContatoreNotifiche();
+            playerRepository.save(f);
+
+            List<Notification> notifications = new ArrayList<>(p.getNotifications());
+            notifications.add(not);
+            p.setNotifications(notifications);
+            playerRepository.save(p);
+
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public ResponseEntity<Boolean> removeFriend(String bearerToken, long friendId) {
+
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        Optional<PlayerEntity> friend = playerRepository.findById(friendId);
+
+        if (player.isPresent()) {
+
+            PlayerEntity p = player.get();
+            PlayerEntity f = friend.get();
+
+            p.removeFriend(f);
+            playerRepository.save(p);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public ResponseEntity<Set<PlayerEntity>> getFriends(String bearerToken) {
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            return new ResponseEntity<>(player.get().getFriends(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<List<Long>> getFriendsIds(String bearerToken) {
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            return new ResponseEntity<>(playerRepository.friendsIds(player.get().getId()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<List<Long>> getSentFriendRequests(String bearerToken) {
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            return new ResponseEntity<>(friendRequestRepository.getSentFriendRequest(player.get().getId()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<List<PlayerEntity>> getReceivedFriendRequests(String bearerToken) {
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            List<Long> senderIds = this.friendRequestRepository.getReceivedFriendRequest(player.get().getId());
+
+            List<PlayerEntity> requestSenders = new ArrayList<>();
+            senderIds.forEach(id -> {
+                Optional<PlayerEntity> optionalPlayer = this.playerRepository.findById(id);
+                optionalPlayer.ifPresent(requestSenders::add);
+            });
+
+            return new ResponseEntity<>(requestSenders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<List<Notification>> getNotifications(String bearerToken) {
+        Optional<PlayerEntity> player = playerRepository.findById(getUserFromAuthorizationToken(bearerToken).getPlayer().getId());
+        if (player.isPresent()) {
+            player.get().getContatori().setNotificationCounter(0);
+            playerRepository.save(player.get());
+            return new ResponseEntity<>(player.get().getNotifications(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

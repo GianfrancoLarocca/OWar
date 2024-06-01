@@ -1,12 +1,7 @@
 package com.giancotsu.owar.controller;
 
-import com.giancotsu.owar.dto.AllBasicBuildingsInfoDto;
-import com.giancotsu.owar.dto.ProduzioneRisorseDto;
-import com.giancotsu.owar.dto.RisorsaDto;
-import com.giancotsu.owar.dto.SviluppoCompletoDto;
-import com.giancotsu.owar.entity.player.Attivita;
-import com.giancotsu.owar.entity.player.PlayerBasicInformationEntity;
-import com.giancotsu.owar.entity.player.PlayerEntity;
+import com.giancotsu.owar.dto.*;
+import com.giancotsu.owar.entity.player.*;
 import com.giancotsu.owar.service.player.CostiService;
 import com.giancotsu.owar.service.player.PlayerService;
 import com.giancotsu.owar.service.player.PlayerSviluppoService;
@@ -14,9 +9,11 @@ import com.giancotsu.owar.service.player.RisorseService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "api/player")
@@ -26,14 +23,16 @@ public class PlayerController {
     private final PlayerSviluppoService playerSviluppoService;
     private final RisorseService risorseService;
     private final CostiService costiService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
 
 
-    public PlayerController(PlayerService playerService, PlayerSviluppoService playerSviluppoService, RisorseService risorseService, CostiService costiService) {
+    public PlayerController(PlayerService playerService, PlayerSviluppoService playerSviluppoService, RisorseService risorseService, CostiService costiService, SimpMessagingTemplate simpMessagingTemplate) {
         this.playerService = playerService;
         this.playerSviluppoService = playerSviluppoService;
         this.risorseService = risorseService;
         this.costiService = costiService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @GetMapping()
@@ -44,6 +43,56 @@ public class PlayerController {
     @GetMapping(value = "basic")
     public ResponseEntity<PlayerBasicInformationEntity> getPlayerBasicInformation(@RequestHeader("Authorization") String bearerToken) {
         return this.playerService.getPlayerBasicInformation(bearerToken);
+    }
+
+    @GetMapping(value = "find/{nickname}")
+    public ResponseEntity<List<PlayerEntity>> findPlayerByNickname(@PathVariable("nickname") String nickname) {
+        return this.playerService.findPlayerByNickname(nickname);
+    }
+
+    @GetMapping(value = "/send-friend-request/{receiverId}")
+    public ResponseEntity<Boolean> sendFriendRequest(@RequestHeader("Authorization") String bearerToken, @PathVariable("receiverId") long receiverId) {
+        return this.playerService.sendFriendRequest(bearerToken, receiverId);
+    }
+
+    @GetMapping(value = "/friend-request-chose/{id}")
+    public ResponseEntity<Boolean> friendRequestChose(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") long id) {
+        return this.playerService.friendRequestChose(bearerToken, id);
+    }
+
+    @PostMapping(value = "friend/add/{friendId}")
+    public ResponseEntity<Boolean> addFriend(@RequestHeader("Authorization") String bearerToken, @PathVariable("friendId") long friendId) {
+        return this.playerService.addFriend(bearerToken, friendId);
+    }
+
+    @PostMapping(value = "friend/remove/{friendId}")
+    public ResponseEntity<Boolean> removeFriend(@RequestHeader("Authorization") String bearerToken, @PathVariable("friendId") long friendId) {
+        return this.playerService.removeFriend(bearerToken, friendId);
+    }
+
+    @GetMapping(value = "friends")
+    public ResponseEntity<Set<PlayerEntity>> getFriends(@RequestHeader("Authorization") String bearerToken) {
+        return this.playerService.getFriends(bearerToken);
+    }
+
+    @GetMapping(value = "friends/ids")
+    public ResponseEntity<List<Long>> getFriendsIds(@RequestHeader("Authorization") String bearerToken) {
+        return this.playerService.getFriendsIds(bearerToken);
+    }
+
+    @GetMapping(value = "friend-requests/ids")
+    public ResponseEntity<List<Long>> getSentFriendRequests(@RequestHeader("Authorization") String bearerToken) {
+        return this.playerService.getSentFriendRequests(bearerToken);
+    }
+
+    @GetMapping(value = "received-friend-requests")
+    public ResponseEntity<List<PlayerEntity>> getReceivedFriendRequests(@RequestHeader("Authorization") String bearerToken) {
+        return this.playerService.getReceivedFriendRequests(bearerToken);
+    }
+
+    @GetMapping(value = "notifications")
+    public ResponseEntity<List<Notification>> getNotifications(@RequestHeader("Authorization") String bearerToken) {
+        return this.playerService.getNotifications(bearerToken);
     }
 
     @GetMapping(value = "basic/{nickname}")

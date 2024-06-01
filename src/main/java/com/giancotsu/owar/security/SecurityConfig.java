@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/auth/register", HttpMethod.POST.name()).permitAll()
                         .requestMatchers("/api/auth/login", HttpMethod.POST.name()).permitAll()
                         .requestMatchers("/api/auth/reset/password/email/*", HttpMethod.POST.name()).permitAll()
