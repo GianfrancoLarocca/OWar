@@ -10,7 +10,6 @@ import com.giancotsu.owar.projection.BasicBuildingInfoProjection;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.PlayerStruttureRepository;
 import com.giancotsu.owar.repository.player.StruttureRepository;
-import com.giancotsu.owar.repository.player.SviluppoAstrattoRepository;
 import com.giancotsu.owar.security.JWTGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,16 +28,15 @@ public class StruttureService {
     private final UserRepository userRepository;
     private final AlzaLivelloTry alzaLivelloTry;
     private final CostiService costiService;
-    private final SviluppoAstrattoRepository sviluppoAstrattoRepository;
 
-    public StruttureService(StruttureRepository struttureRepository, PlayerStruttureRepository playerStruttureRepository, JWTGenerator jwtGenerator, UserRepository userRepository, AlzaLivelloTry alzaLivelloTry, CostiService costiService, SviluppoAstrattoRepository sviluppoAstrattoRepository) {
+
+    public StruttureService(StruttureRepository struttureRepository, PlayerStruttureRepository playerStruttureRepository, JWTGenerator jwtGenerator, UserRepository userRepository, AlzaLivelloTry alzaLivelloTry, CostiService costiService) {
         this.struttureRepository = struttureRepository;
         this.playerStruttureRepository = playerStruttureRepository;
         this.jwtGenerator = jwtGenerator;
         this.userRepository = userRepository;
         this.alzaLivelloTry = alzaLivelloTry;
         this.costiService = costiService;
-        this.sviluppoAstrattoRepository = sviluppoAstrattoRepository;
 
         this.creaStrutture();
     }
@@ -59,7 +57,7 @@ public class StruttureService {
             costiLaboratorio.put(RisorseEnum.ENERGIA, 80.5);
             costiLaboratorio.put(RisorseEnum.CIVILI, 45.1);
             costiLaboratorio.put(RisorseEnum.BITCOIN, 800.5);
-            Strutture laboratorio = new Strutture(null, nome1, descrizione, "../../assets/img/sviluppo-strutture/research-lab.png", 1.14, costiLaboratorio, 1.15);
+            Strutture laboratorio = new Strutture(null, nome1, descrizione, "../../assets/img/sviluppo-strutture/research-lab.png", 1.14, costiLaboratorio, 1.50);
 
             this.strutture.add(struttureRepository.save(laboratorio));
         } else {
@@ -72,13 +70,13 @@ public class StruttureService {
         Optional<Strutture> optionalFabbrica = struttureRepository.findByNome(nome2);
         Map<RisorseEnum, Double> costiFabbrica = new HashMap<>();
         if(optionalFabbrica.isEmpty()) {
-            String descrizione = "La fabbrica di munizioni permette di produrre qualsiasi tipo di munizione, dai proiettili per i nostri soldati ai missili in dotazione ai nostri jet o macchinari difensivi. A ogni livello, incrementi la potenza di fuoco delle munizioni.";
+            String descrizione = "La fabbrica di munizioni permette di produrre qualsiasi tipo di munizione, dai proiettili per i nostri soldati ai missili in dotazione ai nostri veicoli offensivi o macchinari difensivi. A ogni livello, incrementi la potenza di fuoco delle munizioni.";
             costiFabbrica.put(RisorseEnum.MICROCHIP, 350.5);
             costiFabbrica.put(RisorseEnum.METALLO, 510.5);
             costiFabbrica.put(RisorseEnum.ENERGIA, 120.5);
             costiFabbrica.put(RisorseEnum.CIVILI, 20.5);
             costiFabbrica.put(RisorseEnum.BITCOIN, 340.5);
-            Strutture fabbrica = new Strutture(null, nome2, descrizione, "../../assets/img/sviluppo-strutture/munitions-factory.png", 1.14, costiFabbrica, 1.17);
+            Strutture fabbrica = new Strutture(null, nome2, descrizione, "../../assets/img/sviluppo-strutture/munitions-factory.png", 1.14, costiFabbrica, 1.75);
 
             this.strutture.add(struttureRepository.save(fabbrica));
         } else {
@@ -97,7 +95,7 @@ public class StruttureService {
             costiAddestramento.put(RisorseEnum.ENERGIA, 40.5);
             costiAddestramento.put(RisorseEnum.CIVILI, 380.9);
             costiAddestramento.put(RisorseEnum.BITCOIN, 890.5);
-            Strutture addestramento = new Strutture(null, nome3, descrizione, "../../assets/img/sviluppo-strutture/training-camp.png", 1.13, costiAddestramento, 1.17);
+            Strutture addestramento = new Strutture(null, nome3, descrizione, "../../assets/img/sviluppo-strutture/training-camp.png", 1.13, costiAddestramento, 1.90);
 
             this.strutture.add(struttureRepository.save(addestramento));
         } else {
@@ -173,7 +171,7 @@ public class StruttureService {
             costiDeposito.put(RisorseEnum.ENERGIA, 20.9);
             costiDeposito.put(RisorseEnum.CIVILI, 45.9);
             costiDeposito.put(RisorseEnum.BITCOIN, 712.9);
-            Strutture deposito = new Strutture(null, nome7, descrizione, "../../assets/img/sviluppo-strutture/war-depot.png", 1.14, costiDeposito, 2.0);
+            Strutture deposito = new Strutture(null, nome7, descrizione, "../../assets/img/sviluppo-strutture/war-depot.png", 1.14, costiDeposito, 5.30);
 
             this.strutture.add(struttureRepository.save(deposito));
         } else {
@@ -192,7 +190,7 @@ public class StruttureService {
             costiInfermeria.put(RisorseEnum.ENERGIA, 20.9);
             costiInfermeria.put(RisorseEnum.CIVILI, 45.2);
             costiInfermeria.put(RisorseEnum.BITCOIN, 712.4);
-            Strutture infermeria = new Strutture(null, nome8, descrizione, "../../assets/img/sviluppo-strutture/infirmary.png", 1.14, costiInfermeria, 2.0);
+            Strutture infermeria = new Strutture(null, nome8, descrizione, "../../assets/img/sviluppo-strutture/infirmary.png", 1.14, costiInfermeria, 3.5);
 
             this.strutture.add(struttureRepository.save(infermeria));
         } else {
@@ -209,7 +207,7 @@ public class StruttureService {
             costiCimitero.put(RisorseEnum.ENERGIA, 25.7);
             costiCimitero.put(RisorseEnum.CIVILI, 15.5);
             costiCimitero.put(RisorseEnum.BITCOIN, 650.1);
-            Strutture cimitero = new Strutture(null, nome9, descrizione, "../../assets/img/sviluppo-strutture/graveyard.png", 1.14, costiCimitero, 2.0);
+            Strutture cimitero = new Strutture(null, nome9, descrizione, "../../assets/img/sviluppo-strutture/graveyard.png", 1.14, costiCimitero, 4.2);
 
             this.strutture.add(struttureRepository.save(cimitero));
         } else {
