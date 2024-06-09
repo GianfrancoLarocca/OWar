@@ -44,6 +44,10 @@ public class PlayerEntity {
 
     @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
     @JsonIgnore
+    private List<PlayerStrutture> playerStrutture;
+
+    @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
+    @JsonIgnore
     private List<Notification> notifications;
 
     @ManyToMany

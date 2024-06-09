@@ -2,15 +2,15 @@ package com.giancotsu.owar.entity.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
 @NoArgsConstructor
-@ToString
+@Getter
+@Setter
 public class Attivita {
 
     @Id

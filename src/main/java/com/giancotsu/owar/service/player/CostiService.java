@@ -1,8 +1,10 @@
 package com.giancotsu.owar.service.player;
 
+import com.giancotsu.owar.entity.player.PlayerStrutture;
 import com.giancotsu.owar.entity.player.PlayerSviluppo;
 import com.giancotsu.owar.projection.SviluppoCostiProjection;
 import com.giancotsu.owar.repository.UserRepository;
+import com.giancotsu.owar.repository.player.PlayerStruttureRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import com.giancotsu.owar.security.JWTGenerator;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,14 @@ import java.util.Optional;
 public class CostiService {
 
     private final PlayerSviluppoRepository playerSviluppoRepository;
+    private final PlayerStruttureRepository playerStruttureRepository;
     private final RisorseService risorseService;
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
+    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
+        this.playerStruttureRepository = playerStruttureRepository;
         this.risorseService = risorseService;
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
@@ -52,6 +56,25 @@ public class CostiService {
         throw new RuntimeException("Struttura non trovata");
     }
 
+    public Map<String, Double> getCostiSviluppoStruttura(Long strutturaId, Long playerId) {
+
+        Optional<PlayerStrutture> ps = playerStruttureRepository.findByPlayerIdAndSviluppoId(playerId, strutturaId);
+        if (ps.isPresent()) {
+
+            List<SviluppoCostiProjection> costiProjection = playerStruttureRepository.getCostiSviluppo(playerId, strutturaId);
+            int livelloStruttura = costiProjection.stream().findFirst().get().getLivello();
+
+            Map<String, Double> costi = new HashMap<>();
+            costiProjection.forEach(p -> {
+                costi.put(p.getRisorsa(), getCosto(p.getCosto(), p.getMoltiplicatore(), livelloStruttura));
+            });
+
+            return costi;
+        }
+
+        throw new RuntimeException("Struttura non trovata");
+    }
+
     public boolean canPay(Long strutturaId, String bearerToken) {
 
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
@@ -67,9 +90,29 @@ public class CostiService {
         return true;
     }
 
+    public boolean canPayStrutture(Long strutturaId, String bearerToken) {
+
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+
+        Map<String, Double> playerResources = risorseService.getPlayerResources(playerId);
+        Map<String, Double> strutturaCosti = getCostiSviluppoStruttura(strutturaId, playerId);
+
+        for (String risorsa : strutturaCosti.keySet()) {
+            if (playerResources.get(risorsa) < strutturaCosti.get(risorsa)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void pay(Long strutturaId, String bearerToken) {
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
         risorseService.payment(getCostiStruttura(strutturaId, playerId), playerId);
+    }
+
+    public void paySviluppoStruttura(Long strutturaId, String bearerToken) {
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+        risorseService.payment(getCostiSviluppoStruttura(strutturaId, playerId), playerId);
     }
 
     public Double convertCostToExp(Long strutturaId, String bearerToken) {
@@ -79,6 +122,40 @@ public class CostiService {
         Double exp = 0.0;
 
         Map<String, Double> strutturaCosti = getCostiStruttura(strutturaId, playerId);
+
+        for (String risorsa : strutturaCosti.keySet()) {
+            switch (risorsa) {
+                case "BITCOIN":
+                    exp += strutturaCosti.get(risorsa) * 0.05;
+                    break;
+                case "MICROCHIP":
+                    exp += strutturaCosti.get(risorsa) * 0.08;
+                    break;
+                case "METALLO":
+                    exp += strutturaCosti.get(risorsa) * 0.1;
+                    break;
+                case "ENERGIA":
+                    exp += strutturaCosti.get(risorsa) * 0.5;
+                    break;
+                case "CIVILI":
+                    exp += strutturaCosti.get(risorsa) * 1.5;
+                    break;
+                case "ACQUA":
+                    exp += strutturaCosti.get(risorsa) * 10.9;
+                    break;
+            }
+        }
+
+        return exp;
+    }
+
+    public Double convertCostToExpSviluppoStrutture(Long strutturaId, String bearerToken) {
+
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+
+        Double exp = 0.0;
+
+        Map<String, Double> strutturaCosti = getCostiSviluppoStruttura(strutturaId, playerId);
 
         for (String risorsa : strutturaCosti.keySet()) {
             switch (risorsa) {

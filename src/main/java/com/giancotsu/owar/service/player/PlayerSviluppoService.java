@@ -656,6 +656,7 @@ public class PlayerSviluppoService {
 
         basicBuildingInfoDtos.forEach(building -> {
             AllBasicBuildingsInfoDto b = new AllBasicBuildingsInfoDto();
+            b.setId(building.getId());
             b.setNome(building.getNome());
             b.setLivello(building.getLivello());
             b.setUrlImg(building.getUrl());

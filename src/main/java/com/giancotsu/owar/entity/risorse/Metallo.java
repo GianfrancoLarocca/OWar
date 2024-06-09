@@ -10,7 +10,7 @@ public class Metallo extends Risorsa {
 
 
     public Metallo() {
-        super(RisorseEnum.METALLO.name(), "Kg", 10000000000.0, "../../assets/img/risorse/metal.png");
+        super(RisorseEnum.METALLO.name(), "Kg", 100000.0, "../../assets/img/risorse/metal.png");
     }
 
     public Metallo(Double quantity) {

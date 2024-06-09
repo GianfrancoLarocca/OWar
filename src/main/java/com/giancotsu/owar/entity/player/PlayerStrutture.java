@@ -1,7 +1,7 @@
 package com.giancotsu.owar.entity.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.giancotsu.owar.entity.player.sviluppo.Sviluppo;
+import com.giancotsu.owar.entity.player.sviluppo.Strutture;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PlayerSviluppo {
+public class PlayerStrutture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,7 @@ public class PlayerSviluppo {
     private PlayerEntity player;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "sviluppo_id")
-    private Sviluppo sviluppo;
+    @JoinColumn(name = "strutture_id")
+    @JsonIgnore
+    private Strutture strutture;
 }

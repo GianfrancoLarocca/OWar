@@ -35,7 +35,7 @@ public class Sviluppo {
     @MapKeyEnumerated(EnumType.STRING)
     private Map<RisorseEnum, Double> produzioneRisorse;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "sviluppo", cascade = {CascadeType.ALL})
     @JsonManagedReference
     private Set<PlayerSviluppo> playerSviluppo;
 
