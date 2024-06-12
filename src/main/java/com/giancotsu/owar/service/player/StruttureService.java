@@ -43,7 +43,7 @@ public class StruttureService {
 
     private List<Strutture> strutture = new ArrayList<>();
 
-    public void creaStrutture() {
+    private void creaStrutture() {
 
         // Lab. di ricerca
 
@@ -90,12 +90,12 @@ public class StruttureService {
         Map<RisorseEnum, Double> costiAddestramento = new HashMap<>();
         if(optionalAddestramento.isEmpty()) {
             String descrizione = "Il campo di addestramento è il luogo dove i nostri soldati migliorano le loro abilità combattive. Più alto è il livello del campo di addestramento, meno tempo impiegherai per addestrare nuove truppe.";
-            costiAddestramento.put(RisorseEnum.MICROCHIP, 290.5);
+            costiAddestramento.put(RisorseEnum.MICROCHIP, 280.5);
             costiAddestramento.put(RisorseEnum.METALLO, 230.5);
-            costiAddestramento.put(RisorseEnum.ENERGIA, 40.5);
-            costiAddestramento.put(RisorseEnum.CIVILI, 380.9);
-            costiAddestramento.put(RisorseEnum.BITCOIN, 890.5);
-            Strutture addestramento = new Strutture(null, nome3, descrizione, "../../assets/img/sviluppo-strutture/training-camp.png", 1.13, costiAddestramento, 1.90);
+            costiAddestramento.put(RisorseEnum.ENERGIA, 10.5);
+            costiAddestramento.put(RisorseEnum.CIVILI, 175.9);
+            costiAddestramento.put(RisorseEnum.BITCOIN, 570.5);
+            Strutture addestramento = new Strutture(null, nome3, descrizione, "../../assets/img/sviluppo-strutture/training-camp.png", 1.14, costiAddestramento, 1.90);
 
             this.strutture.add(struttureRepository.save(addestramento));
         } else {
@@ -282,7 +282,6 @@ public class StruttureService {
         sviluppoStrutturaCompletoDto.setChance(String.format("%.0f", alzaLivelloTry.getPercentualeSuccesso(livelloStruttura)));
 
 
-        //IMPLEMENTARE COSTI SERVICE
         Map<String, Double> costi = costiService.getCostiSviluppoStruttura(sviluppoStrutture.getId(), playerId);
         sviluppoStrutturaCompletoDto.setCosti(costi);
 

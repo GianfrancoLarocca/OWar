@@ -10,6 +10,8 @@ import com.giancotsu.owar.event.strutture.SviluppoStruttureTryLvlUpFailEvent;
 import com.giancotsu.owar.event.strutture.SviluppoStruttureTryLvlUpSuccessEvent;
 import com.giancotsu.owar.event.sviluppo.SviluppoTryLvlUpFailEvent;
 import com.giancotsu.owar.event.sviluppo.SviluppoTryLvlUpSuccessEvent;
+import com.giancotsu.owar.event.tecnologia.TecnologiaTryLvlUpFailEvent;
+import com.giancotsu.owar.event.tecnologia.TecnologiaTryLvlUpSuccessEvent;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.repository.player.*;
 import com.giancotsu.owar.security.JWTGenerator;
@@ -37,28 +39,34 @@ public class PlayerService {
     private final BasicRepository basicRepository;
     private final PlayerRisorseRepository playerRisorseRepository;
     private final UserRepository userRepository;
+    private final TecnologiaRepository tecnologiaRepository;
+    private final StruttureRepository struttureRepository;
     private final AttivitaRepository attivitaRepository;
     private final CostiService costiService;
     private final JWTGenerator jwtGenerator;
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerStruttureRepository playerStruttureRepository;
+    private final PlayerTecnologiaRepository playerTecnologiaRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final FriendRequestRepository friendRequestRepository;
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, ApplicationEventPublisher eventPublisher, FriendRequestRepository friendRequestRepository, NotificationRepository notificationRepository, SimpMessagingTemplate simpMessagingTemplate) {
+    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, TecnologiaRepository tecnologiaRepository, StruttureRepository struttureRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, ApplicationEventPublisher eventPublisher, FriendRequestRepository friendRequestRepository, NotificationRepository notificationRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.playerRepository = playerRepository;
         this.basicRepository = basicRepository;
         this.playerRisorseRepository = playerRisorseRepository;
         this.userRepository = userRepository;
+        this.tecnologiaRepository = tecnologiaRepository;
+        this.struttureRepository = struttureRepository;
         this.attivitaRepository = attivitaRepository;
         this.costiService = costiService;
         this.jwtGenerator = jwtGenerator;
         this.alzaLivelloTry = alzaLivelloTry;
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.playerStruttureRepository = playerStruttureRepository;
+        this.playerTecnologiaRepository = playerTecnologiaRepository;
         this.eventPublisher = eventPublisher;
         this.friendRequestRepository = friendRequestRepository;
         this.notificationRepository = notificationRepository;
@@ -427,6 +435,69 @@ public class PlayerService {
                 }
             } else {
                 return new ResponseEntity<>("building error", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("player error", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    private boolean checkRequisitoTech(Long techId, Long playerId) {
+
+        Optional<Integer> optReq = this.tecnologiaRepository.getRequisitoLvlByTechId(playerId, techId);
+        int req;
+        if(optReq.isPresent()) {
+            req = optReq.get();
+        } else {
+            throw new RuntimeException("Requisito non trovato");
+        }
+
+        Optional<Integer> labLvlOpt = this.struttureRepository.getRequisitoLvl(playerId, "Laboratorio di ricerca");
+        int labLvl;
+        if (labLvlOpt.isPresent()) {
+            labLvl = labLvlOpt.get();
+        } else {
+            throw new RuntimeException("Livello laboratorio non trovato");
+        }
+
+        return labLvl >= req;
+    }
+
+    public ResponseEntity<String> provaAlzaLivelloSviluppoTech(Long techId, String authorizationToken) {
+
+        Optional<PlayerEntity> optionalPlayer = playerRepository.findById(getUserFromAuthorizationToken(authorizationToken).getPlayer().getId());
+        if (optionalPlayer.isPresent()) {
+            PlayerEntity player = optionalPlayer.get();
+            if(this.checkRequisitoTech(techId, player.getId())) {
+                Optional<PlayerTecnologia> opt = playerTecnologiaRepository.findByPlayerIdAndSviluppoId(player.getId(), techId);
+                if (opt.isPresent()) {
+                    PlayerTecnologia pt = opt.get();
+                    if (player.getId() == pt.getPlayer().getId()) {
+                        if (!costiService.canPayTech(techId, authorizationToken)) {
+                            return new ResponseEntity<>("No money", HttpStatus.BAD_REQUEST);
+                        }
+                        costiService.paySviluppoTech(techId, authorizationToken);
+                        int livello = pt.getLivello();
+                        boolean risultato = alzaLivelloTry.alzaLivello(livello);
+                        //evento: tentativo di alzare il livello
+                        if (risultato) {
+                            pt.setLivello(livello + 1);
+                            playerTecnologiaRepository.save(pt);
+                            Double exp = costiService.convertCostToExpNew(costiService.getCostiSviluppoTech(techId, player.getId()));
+                            eventPublisher.publishEvent(new TecnologiaTryLvlUpSuccessEvent(this, player, pt, exp));
+                            return new ResponseEntity<>("success", HttpStatus.OK);
+                        } else {
+                            eventPublisher.publishEvent(new TecnologiaTryLvlUpFailEvent(this, player, pt));
+                            return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
+                        }
+                    } else {
+                        return new ResponseEntity<>("error", HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return new ResponseEntity<>("building error", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>("Non soddisfi i requisiti", HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>("player error", HttpStatus.BAD_REQUEST);
