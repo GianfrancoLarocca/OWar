@@ -1,12 +1,11 @@
 package com.giancotsu.owar.controller;
 
 import com.giancotsu.owar.dto.AllBasicBuildingsInfoDto;
+import com.giancotsu.owar.dto.SviluppoArsenaleDettagliDto;
 import com.giancotsu.owar.dto.SviluppoStrutturaCompletoDto;
 import com.giancotsu.owar.dto.SviluppoTecnologiaDettagliDto;
-import com.giancotsu.owar.service.player.CostiService;
-import com.giancotsu.owar.service.player.PlayerService;
-import com.giancotsu.owar.service.player.StruttureService;
-import com.giancotsu.owar.service.player.TecnologiaService;
+import com.giancotsu.owar.service.player.*;
+import com.giancotsu.owar.utils.JwtUserUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +20,16 @@ public class SviluppoController {
     private final CostiService costiService;
     private final PlayerService playerService;
     private final TecnologiaService tecnologiaService;
+    private final ArsenaleService arsenaleService;
+    private final JwtUserUtils jwtUserUtils;
 
-    public SviluppoController(StruttureService struttureService, CostiService costiService, PlayerService playerService, TecnologiaService tecnologiaService) {
+    public SviluppoController(StruttureService struttureService, CostiService costiService, PlayerService playerService, TecnologiaService tecnologiaService, ArsenaleService arsenaleService, JwtUserUtils jwtUserUtils) {
         this.struttureService = struttureService;
         this.costiService = costiService;
         this.playerService = playerService;
         this.tecnologiaService = tecnologiaService;
+        this.arsenaleService = arsenaleService;
+        this.jwtUserUtils = jwtUserUtils;
     }
 
     //Strutture
@@ -87,6 +90,64 @@ public class SviluppoController {
     public ResponseEntity<Integer> getLabLvl(@RequestHeader("Authorization") String bearerToken){
         return this.tecnologiaService.getLabLvl(bearerToken);
     }
+
+    //Arsenale
+    @GetMapping(value = "arsenale")
+    public ResponseEntity<List<AllBasicBuildingsInfoDto>> getAllBasicArsenaleInfo(@RequestHeader("Authorization") String bearerToken) {
+        return this.arsenaleService.getAllBasicBuildingsInfo(bearerToken);
+    }
+
+    @GetMapping(value = "arsenale/id/{id}")
+    public ResponseEntity<SviluppoArsenaleDettagliDto> getArsenaleDettByName(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long arsenaleId) {
+        return this.arsenaleService.getSviluppoArsenaleDettById(arsenaleId, bearerToken);
+    }
+
+    @GetMapping(value = "arsenale/id/{arsenaleId}/canpay")
+    public ResponseEntity<Boolean> canPayArsenale(@RequestHeader("Authorization") String bearerToken, @PathVariable("arsenaleId") Long arsenaleId) {
+
+        long playerId = jwtUserUtils.getUserFromAuthorizationToken(bearerToken).getPlayer().getId();
+        boolean canPay = this.costiService.canPayNew(bearerToken, costiService.getCostiSviluppoArsenale(arsenaleId, playerId));
+        if(canPay) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "arsenale/id/{arsenaleId}/alzalivello")
+    public ResponseEntity<String> provaAlzaLivelloArsenale(@RequestHeader("Authorization") String bearerToken, @PathVariable("arsenaleId") Long arsenaleId) {
+        return this.playerService.provaAlzaLivelloSviluppoArsenale(arsenaleId, bearerToken);
+    }
+
+    @GetMapping(value = "arsenale/requisito")
+    public ResponseEntity<Integer> getFabbricaLvl(@RequestHeader("Authorization") String bearerToken) {
+        return this.arsenaleService.getFabbricaLvl(bearerToken);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

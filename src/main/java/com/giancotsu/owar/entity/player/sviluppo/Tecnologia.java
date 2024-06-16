@@ -18,7 +18,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tecnologia extends SviluppoAstratto{
+public class Tecnologia extends SviluppoAstratto {
 
     private Double effectValue;
     private String effectValueType;

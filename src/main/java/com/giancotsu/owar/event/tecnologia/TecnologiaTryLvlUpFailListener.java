@@ -10,12 +10,10 @@ import java.util.Optional;
 
 public class TecnologiaTryLvlUpFailListener implements ApplicationListener<TecnologiaTryLvlUpFailEvent> {
 
-    private final RisorseService risorseService;
     private final PlayerService playerService;
     private final SviluppoAstrattoRepository sviluppoAstrattoRepository;
 
-    public TecnologiaTryLvlUpFailListener(RisorseService risorseService, PlayerService playerService, SviluppoAstrattoRepository sviluppoAstrattoRepository) {
-        this.risorseService = risorseService;
+    public TecnologiaTryLvlUpFailListener(PlayerService playerService, SviluppoAstrattoRepository sviluppoAstrattoRepository) {
         this.playerService = playerService;
         this.sviluppoAstrattoRepository = sviluppoAstrattoRepository;
     }
@@ -26,7 +24,7 @@ public class TecnologiaTryLvlUpFailListener implements ApplicationListener<Tecno
         if(nomeTech.isPresent()) {
             int livello = event.getPs().getLivello();
             playerService.setNewActivity(event.getPlayer(), "Tentativo di alzare il livello",
-                    String.format("Hai tentato di alzare il livello della tecnologia \"%s\" al livello %d, ma hai fallito! Il livello della struttura è ancora %d.",
+                    String.format("Hai tentato di alzare il livello della tecnologia \"%s\" al livello %d, ma hai fallito! Il livello della tecnologia rimane %d.",
                             nomeTech.get(), livello + 1, livello));
         } else {
             throw new RuntimeException("Tecnologia non trovata");

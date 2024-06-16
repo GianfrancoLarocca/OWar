@@ -6,6 +6,8 @@ import com.giancotsu.owar.dto.RisorsaDto;
 import com.giancotsu.owar.dto.map.RisorseMapper;
 import com.giancotsu.owar.entity.player.*;
 import com.giancotsu.owar.entity.user.UserEntity;
+import com.giancotsu.owar.event.arsenale.ArsenaleTryLvlUpFailEvent;
+import com.giancotsu.owar.event.arsenale.ArsenaleTryLvlUpSuccessEvent;
 import com.giancotsu.owar.event.strutture.SviluppoStruttureTryLvlUpFailEvent;
 import com.giancotsu.owar.event.strutture.SviluppoStruttureTryLvlUpSuccessEvent;
 import com.giancotsu.owar.event.sviluppo.SviluppoTryLvlUpFailEvent;
@@ -42,18 +44,20 @@ public class PlayerService {
     private final TecnologiaRepository tecnologiaRepository;
     private final StruttureRepository struttureRepository;
     private final AttivitaRepository attivitaRepository;
+    private final ArsenaleRepository arsenaleRepository;
     private final CostiService costiService;
     private final JWTGenerator jwtGenerator;
     private final AlzaLivelloTry alzaLivelloTry;
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerStruttureRepository playerStruttureRepository;
     private final PlayerTecnologiaRepository playerTecnologiaRepository;
+    private final PlayerArsenaleRepository playerArsenaleRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final FriendRequestRepository friendRequestRepository;
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, TecnologiaRepository tecnologiaRepository, StruttureRepository struttureRepository, AttivitaRepository attivitaRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, ApplicationEventPublisher eventPublisher, FriendRequestRepository friendRequestRepository, NotificationRepository notificationRepository, SimpMessagingTemplate simpMessagingTemplate) {
+    public PlayerService(PlayerRepository playerRepository, BasicRepository basicRepository, PlayerRisorseRepository playerRisorseRepository, UserRepository userRepository, TecnologiaRepository tecnologiaRepository, StruttureRepository struttureRepository, AttivitaRepository attivitaRepository, ArsenaleRepository arsenaleRepository, CostiService costiService, JWTGenerator jwtGenerator, AlzaLivelloTry alzaLivelloTry, PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, PlayerArsenaleRepository playerArsenaleRepository, ApplicationEventPublisher eventPublisher, FriendRequestRepository friendRequestRepository, NotificationRepository notificationRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.playerRepository = playerRepository;
         this.basicRepository = basicRepository;
         this.playerRisorseRepository = playerRisorseRepository;
@@ -61,12 +65,14 @@ public class PlayerService {
         this.tecnologiaRepository = tecnologiaRepository;
         this.struttureRepository = struttureRepository;
         this.attivitaRepository = attivitaRepository;
+        this.arsenaleRepository = arsenaleRepository;
         this.costiService = costiService;
         this.jwtGenerator = jwtGenerator;
         this.alzaLivelloTry = alzaLivelloTry;
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.playerStruttureRepository = playerStruttureRepository;
         this.playerTecnologiaRepository = playerTecnologiaRepository;
+        this.playerArsenaleRepository = playerArsenaleRepository;
         this.eventPublisher = eventPublisher;
         this.friendRequestRepository = friendRequestRepository;
         this.notificationRepository = notificationRepository;
@@ -488,6 +494,69 @@ public class PlayerService {
                             return new ResponseEntity<>("success", HttpStatus.OK);
                         } else {
                             eventPublisher.publishEvent(new TecnologiaTryLvlUpFailEvent(this, player, pt));
+                            return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
+                        }
+                    } else {
+                        return new ResponseEntity<>("error", HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return new ResponseEntity<>("building error", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>("Non soddisfi i requisiti", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("player error", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    private boolean checkRequisitoArsenale(Long arsenaleId, Long playerId) {
+
+        Optional<Integer> optReq = this.arsenaleRepository.getRequisitoLvlByArsenaleId(playerId, arsenaleId);
+        int req;
+        if(optReq.isPresent()) {
+            req = optReq.get();
+        } else {
+            throw new RuntimeException("Requisito non trovato");
+        }
+
+        Optional<Integer> fabbricaLvlOpt = this.struttureRepository.getRequisitoLvl(playerId, "Fabbrica di munizioni");
+        int fabbricaLvl;
+        if (fabbricaLvlOpt.isPresent()) {
+            fabbricaLvl = fabbricaLvlOpt.get();
+        } else {
+            throw new RuntimeException("Livello fabbrica non trovato");
+        }
+
+        return fabbricaLvl >= req;
+    }
+
+    public ResponseEntity<String> provaAlzaLivelloSviluppoArsenale(Long arsenaleId, String authorizationToken) {
+
+        Optional<PlayerEntity> optionalPlayer = playerRepository.findById(getUserFromAuthorizationToken(authorizationToken).getPlayer().getId());
+        if (optionalPlayer.isPresent()) {
+            PlayerEntity player = optionalPlayer.get();
+            if(this.checkRequisitoArsenale(arsenaleId, player.getId())) {
+                Optional<PlayerArsenale> opt = playerArsenaleRepository.findByPlayerIdAndSviluppoId(player.getId(), arsenaleId);
+                if (opt.isPresent()) {
+                    PlayerArsenale pa = opt.get();
+                    if (player.getId() == pa.getPlayer().getId()) {
+                        if (!costiService.canPayNew(authorizationToken, costiService.getCostiSviluppoArsenale(arsenaleId, player.getId()))) {
+                            return new ResponseEntity<>("No money", HttpStatus.BAD_REQUEST);
+                        }
+                        costiService.paySviluppoArsenale(arsenaleId, authorizationToken);
+                        int livello = pa.getLivello();
+                        boolean risultato = alzaLivelloTry.alzaLivello(livello);
+                        //evento: tentativo di alzare il livello
+                        if (risultato) {
+                            pa.setLivello(livello + 1);
+                            playerArsenaleRepository.save(pa);
+                            Double exp = costiService.convertCostToExpNew(costiService.getCostiSviluppoArsenale(arsenaleId, player.getId()));
+                            eventPublisher.publishEvent(new ArsenaleTryLvlUpSuccessEvent(this, player, pa, exp));
+                            return new ResponseEntity<>("success", HttpStatus.OK);
+                        } else {
+                            eventPublisher.publishEvent(new ArsenaleTryLvlUpFailEvent(this, player, pa));
                             return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
                         }
                     } else {

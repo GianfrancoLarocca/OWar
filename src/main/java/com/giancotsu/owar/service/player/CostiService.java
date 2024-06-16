@@ -1,10 +1,12 @@
 package com.giancotsu.owar.service.player;
 
+import com.giancotsu.owar.entity.player.PlayerArsenale;
 import com.giancotsu.owar.entity.player.PlayerStrutture;
 import com.giancotsu.owar.entity.player.PlayerSviluppo;
 import com.giancotsu.owar.entity.player.PlayerTecnologia;
 import com.giancotsu.owar.projection.SviluppoCostiProjection;
 import com.giancotsu.owar.repository.UserRepository;
+import com.giancotsu.owar.repository.player.PlayerArsenaleRepository;
 import com.giancotsu.owar.repository.player.PlayerStruttureRepository;
 import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
 import com.giancotsu.owar.repository.player.PlayerTecnologiaRepository;
@@ -23,14 +25,16 @@ public class CostiService {
     private final PlayerSviluppoRepository playerSviluppoRepository;
     private final PlayerStruttureRepository playerStruttureRepository;
     private final PlayerTecnologiaRepository playerTecnologiaRepository;
+    private final PlayerArsenaleRepository playerArsenaleRepository;
     private final RisorseService risorseService;
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
+    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, PlayerArsenaleRepository playerArsenaleRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.playerStruttureRepository = playerStruttureRepository;
         this.playerTecnologiaRepository = playerTecnologiaRepository;
+        this.playerArsenaleRepository = playerArsenaleRepository;
         this.risorseService = risorseService;
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
@@ -98,6 +102,25 @@ public class CostiService {
         throw new RuntimeException("Tecnologia non trovata");
     }
 
+    public Map<String, Double> getCostiSviluppoArsenale(Long arsenaleId, Long playerId) {
+
+        Optional<PlayerArsenale> pa = playerArsenaleRepository.findByPlayerIdAndSviluppoId(playerId, arsenaleId);
+        if (pa.isPresent()) {
+
+            List<SviluppoCostiProjection> costiProjection = playerArsenaleRepository.getCostiSviluppo(playerId, arsenaleId);
+            int livelloStruttura = costiProjection.stream().findFirst().get().getLivello();
+
+            Map<String, Double> costi = new HashMap<>();
+            costiProjection.forEach(p -> {
+                costi.put(p.getRisorsa(), getCosto(p.getCosto(), p.getMoltiplicatore(), livelloStruttura));
+            });
+
+            return costi;
+        }
+
+        throw new RuntimeException("Arsenale non trovato");
+    }
+
     public boolean canPay(Long strutturaId, String bearerToken) {
 
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
@@ -143,6 +166,20 @@ public class CostiService {
         return true;
     }
 
+    public boolean canPayNew(String bearerToken, Map<String, Double> costi) {
+
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+
+        Map<String, Double> playerResources = risorseService.getPlayerResources(playerId);
+
+        for (String risorsa : costi.keySet()) {
+            if (playerResources.get(risorsa) < costi.get(risorsa)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void pay(Long strutturaId, String bearerToken) {
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
         risorseService.payment(getCostiStruttura(strutturaId, playerId), playerId);
@@ -156,6 +193,11 @@ public class CostiService {
     public void paySviluppoTech(Long strutturaId, String bearerToken) {
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
         risorseService.payment(getCostiSviluppoTech(strutturaId, playerId), playerId);
+    }
+
+    public void paySviluppoArsenale(Long strutturaId, String bearerToken) {
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+        risorseService.payment(getCostiSviluppoArsenale(strutturaId, playerId), playerId);
     }
 
     public Double convertCostToExp(Long strutturaId, String bearerToken) {

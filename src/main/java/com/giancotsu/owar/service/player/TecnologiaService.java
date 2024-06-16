@@ -151,7 +151,7 @@ public class TecnologiaService {
             playerTecnologia.setTecnologia(t);
             playerTecnologiaRepository.save(playerTecnologia);
 
-            System.err.println("sto salvando tecnologia: " + t.getNome() + "al player: " + user.getPlayer().getBasicInformation().getNickname());
+            //System.err.println("sto salvando tecnologia: " + t.getNome() + "al player: " + user.getPlayer().getBasicInformation().getNickname());
         }
     }
 
@@ -207,10 +207,7 @@ public class TecnologiaService {
             throw new RuntimeException("Tecnologia non trovata");
         }
 
-
-
         sviluppoTecnologiaDettagliDto.setChance(String.format("%.0f", alzaLivelloTry.getPercentualeSuccesso(livelloTech)));
-
 
         Map<String, Double> costi = costiService.getCostiSviluppoTech(sviluppoTech.getId(), playerId);
         sviluppoTecnologiaDettagliDto.setCosti(costi);

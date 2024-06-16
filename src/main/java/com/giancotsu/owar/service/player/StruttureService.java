@@ -73,7 +73,7 @@ public class StruttureService {
             String descrizione = "La fabbrica di munizioni permette di produrre qualsiasi tipo di munizione, dai proiettili per i nostri soldati ai missili in dotazione ai nostri veicoli offensivi o macchinari difensivi. A ogni livello, incrementi la potenza di fuoco delle munizioni.";
             costiFabbrica.put(RisorseEnum.MICROCHIP, 350.5);
             costiFabbrica.put(RisorseEnum.METALLO, 510.5);
-            costiFabbrica.put(RisorseEnum.ENERGIA, 120.5);
+            costiFabbrica.put(RisorseEnum.ENERGIA, 140.5);
             costiFabbrica.put(RisorseEnum.CIVILI, 20.5);
             costiFabbrica.put(RisorseEnum.BITCOIN, 340.5);
             Strutture fabbrica = new Strutture(null, nome2, descrizione, "../../assets/img/sviluppo-strutture/munitions-factory.png", 1.14, costiFabbrica, 1.75);
@@ -93,7 +93,7 @@ public class StruttureService {
             costiAddestramento.put(RisorseEnum.MICROCHIP, 280.5);
             costiAddestramento.put(RisorseEnum.METALLO, 230.5);
             costiAddestramento.put(RisorseEnum.ENERGIA, 10.5);
-            costiAddestramento.put(RisorseEnum.CIVILI, 175.9);
+            costiAddestramento.put(RisorseEnum.CIVILI, 125.9);
             costiAddestramento.put(RisorseEnum.BITCOIN, 570.5);
             Strutture addestramento = new Strutture(null, nome3, descrizione, "../../assets/img/sviluppo-strutture/training-camp.png", 1.14, costiAddestramento, 1.90);
 
