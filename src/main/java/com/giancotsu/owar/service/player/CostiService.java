@@ -1,15 +1,9 @@
 package com.giancotsu.owar.service.player;
 
-import com.giancotsu.owar.entity.player.PlayerArsenale;
-import com.giancotsu.owar.entity.player.PlayerStrutture;
-import com.giancotsu.owar.entity.player.PlayerSviluppo;
-import com.giancotsu.owar.entity.player.PlayerTecnologia;
+import com.giancotsu.owar.entity.player.*;
 import com.giancotsu.owar.projection.SviluppoCostiProjection;
 import com.giancotsu.owar.repository.UserRepository;
-import com.giancotsu.owar.repository.player.PlayerArsenaleRepository;
-import com.giancotsu.owar.repository.player.PlayerStruttureRepository;
-import com.giancotsu.owar.repository.player.PlayerSviluppoRepository;
-import com.giancotsu.owar.repository.player.PlayerTecnologiaRepository;
+import com.giancotsu.owar.repository.player.*;
 import com.giancotsu.owar.security.JWTGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -26,15 +20,17 @@ public class CostiService {
     private final PlayerStruttureRepository playerStruttureRepository;
     private final PlayerTecnologiaRepository playerTecnologiaRepository;
     private final PlayerArsenaleRepository playerArsenaleRepository;
+    private final PlayerDifesaRepository playerDifesaRepository;
     private final RisorseService risorseService;
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, PlayerArsenaleRepository playerArsenaleRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
+    public CostiService(PlayerSviluppoRepository playerSviluppoRepository, PlayerStruttureRepository playerStruttureRepository, PlayerTecnologiaRepository playerTecnologiaRepository, PlayerArsenaleRepository playerArsenaleRepository, PlayerDifesaRepository playerDifesaRepository, RisorseService risorseService, UserRepository userRepository, JWTGenerator jwtGenerator) {
         this.playerSviluppoRepository = playerSviluppoRepository;
         this.playerStruttureRepository = playerStruttureRepository;
         this.playerTecnologiaRepository = playerTecnologiaRepository;
         this.playerArsenaleRepository = playerArsenaleRepository;
+        this.playerDifesaRepository = playerDifesaRepository;
         this.risorseService = risorseService;
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
@@ -121,6 +117,25 @@ public class CostiService {
         throw new RuntimeException("Arsenale non trovato");
     }
 
+    public Map<String, Double> getCostiSviluppoDifesa(Long difesaId, Long playerId) {
+
+        Optional<PlayerDifesa> pd = playerDifesaRepository.findByPlayerIdAndSviluppoId(playerId, difesaId);
+        if (pd.isPresent()) {
+
+            List<SviluppoCostiProjection> costiProjection = playerDifesaRepository.getCostiSviluppo(playerId, difesaId);
+            int livelloStruttura = costiProjection.stream().findFirst().get().getLivello();
+
+            Map<String, Double> costi = new HashMap<>();
+            costiProjection.forEach(p -> {
+                costi.put(p.getRisorsa(), getCosto(p.getCosto(), p.getMoltiplicatore(), livelloStruttura));
+            });
+
+            return costi;
+        }
+
+        throw new RuntimeException("Difesa non trovata");
+    }
+
     public boolean canPay(Long strutturaId, String bearerToken) {
 
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
@@ -198,6 +213,11 @@ public class CostiService {
     public void paySviluppoArsenale(Long strutturaId, String bearerToken) {
         Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
         risorseService.payment(getCostiSviluppoArsenale(strutturaId, playerId), playerId);
+    }
+
+    public void paySviluppoDifesa(Long strutturaId, String bearerToken) {
+        Long playerId = getPlayerIdByAuthorizationToken(bearerToken);
+        risorseService.payment(getCostiSviluppoDifesa(strutturaId, playerId), playerId);
     }
 
     public Double convertCostToExp(Long strutturaId, String bearerToken) {

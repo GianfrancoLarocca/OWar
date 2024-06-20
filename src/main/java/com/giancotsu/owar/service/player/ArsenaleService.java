@@ -2,10 +2,8 @@ package com.giancotsu.owar.service.player;
 
 import com.giancotsu.owar.dto.AllBasicBuildingsInfoDto;
 import com.giancotsu.owar.dto.SviluppoArsenaleDettagliDto;
-import com.giancotsu.owar.dto.SviluppoTecnologiaDettagliDto;
 import com.giancotsu.owar.entity.player.PlayerArsenale;
 import com.giancotsu.owar.entity.player.sviluppo.Arsenale;
-import com.giancotsu.owar.entity.player.sviluppo.Tecnologia;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
 import com.giancotsu.owar.entity.user.UserEntity;
 import com.giancotsu.owar.projection.BasicBuildingInfoProjection;
@@ -291,22 +289,5 @@ public class ArsenaleService {
         }
         return new ResponseEntity<>(fabbricaLvl, HttpStatus.OK);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

@@ -12,10 +12,7 @@ import com.giancotsu.owar.event.user.UserRegisteredEvent;
 import com.giancotsu.owar.repository.RoleRepository;
 import com.giancotsu.owar.repository.UserRepository;
 import com.giancotsu.owar.security.JWTGenerator;
-import com.giancotsu.owar.service.player.ArsenaleService;
-import com.giancotsu.owar.service.player.PlayerSviluppoService;
-import com.giancotsu.owar.service.player.StruttureService;
-import com.giancotsu.owar.service.player.TecnologiaService;
+import com.giancotsu.owar.service.player.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +43,7 @@ public class AuthService {
     private final StruttureService struttureService;
     private final TecnologiaService tecnologiaService;
     private final ArsenaleService arsenaleService;
+    private final DifesaService difesaService;
     private final Validator validator;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -53,7 +51,7 @@ public class AuthService {
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, StruttureService struttureService, TecnologiaService tecnologiaService, ArsenaleService arsenaleService, Validator validator, ApplicationEventPublisher eventPublisher) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, StruttureService struttureService, TecnologiaService tecnologiaService, ArsenaleService arsenaleService, DifesaService difesaService, Validator validator, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -64,6 +62,7 @@ public class AuthService {
         this.struttureService = struttureService;
         this.tecnologiaService = tecnologiaService;
         this.arsenaleService = arsenaleService;
+        this.difesaService = difesaService;
         this.validator = validator;
         this.eventPublisher = eventPublisher;
 
@@ -122,6 +121,7 @@ public class AuthService {
         struttureService.salvaStrutture(savedUser);
         tecnologiaService.salvaTecnologie(savedUser);
         arsenaleService.salvaArsenale(savedUser);
+        difesaService.salvaDifesa(savedUser);
 
         String activationUrl = "%s/activation/%s/%s".formatted(frontendUrl, newUser.getEmail(), newUser.getActivationCode());
         String emailBody = """                
