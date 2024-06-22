@@ -30,22 +30,17 @@ public class SviluppoArsenaleDettagliDto {
     private long velocita;
     private long stiva;
     private long consumo;
+    private long numeroMassimoObbiettivi;
+    private long numeroMassimoArma;
 
-    public SviluppoArsenaleDettagliDto(String nome, String descrizione, Integer livello, String urlImmagine, Map<String, Double> costi, String chance, int livelloFabbricaRequisito, long attacco, long armatura, long vita, long velocita, long stiva, long consumo) {
-        this.nome = nome;
-        this.descrizione = descrizione;
-        this.livello = livello;
-        this.urlImmagine = urlImmagine;
-        this.costi = costi;
-        this.chance = chance;
-        this.livelloFabbricaRequisito = livelloFabbricaRequisito;
-        this.attacco = attacco;
-        this.armatura = armatura;
-        this.vita = vita;
-        this.velocita = velocita;
-        this.stiva = stiva;
-        this.consumo = consumo;
-    }
+    private long attaccoNextLvl;
+    private long armaturaNextLvl;
+    private long vitaNextLvl;
+    private long velocitaNextLvl;
+    private long stivaNextLvl;
+    private long consumoNextLvl;
+    private long numeroMassimoObbiettiviNextLvl;
+    private long numeroMassimoArmaNextLvl;
 
     public Map<String, String> getCosti() {
         Map<String, String> newMap = new HashMap<>();
