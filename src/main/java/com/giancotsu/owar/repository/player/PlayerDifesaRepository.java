@@ -11,8 +11,10 @@ import java.util.Optional;
 
 public interface PlayerDifesaRepository extends JpaRepository<PlayerDifesa, Long> {
 
+    Optional<PlayerDifesa> findPlayerDifesaByPlayerIdAndDifesaId(Long playerId, Long difesaId);
+
     @Query(value = """
-            SELECT sa.id, pd.livello, sa.nome, sa.url_immagine AS url
+            SELECT sa.id, pd.livello, sa.nome, sa.url_immagine AS url, pd.livello_fabbrica_requisito AS requisito
             FROM player_difesa AS pd
             INNER JOIN sviluppo_astratto AS sa
             ON sa.id = pd.difesa_id AND pd.player_id = :playerId AND sa.dtype LIKE 'Difesa'

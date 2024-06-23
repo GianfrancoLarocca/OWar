@@ -224,7 +224,7 @@ public class DifesaService {
             costiTorrettaPesante.put(RisorseEnum.CIVILI, 10.1);
             costiTorrettaPesante.put(RisorseEnum.BITCOIN, 300.9);
 
-            int livelloFabbricaRequisito = 19;
+            int livelloFabbricaRequisito = 23;
 
             long danno = 10;
             long penetrazioneArmatura = 5;
@@ -265,7 +265,7 @@ public class DifesaService {
             costiTorrettaPrecisione.put(RisorseEnum.CIVILI, 10.1);
             costiTorrettaPrecisione.put(RisorseEnum.BITCOIN, 300.9);
 
-            int livelloFabbricaRequisito = 27;
+            int livelloFabbricaRequisito = 28;
 
             long danno = 25;
             long penetrazioneArmatura = 30;
@@ -347,7 +347,7 @@ public class DifesaService {
             costiCannone.put(RisorseEnum.CIVILI, 10.1);
             costiCannone.put(RisorseEnum.BITCOIN, 300.9);
 
-            int livelloFabbricaRequisito = 17;
+            int livelloFabbricaRequisito = 19;
 
             long danno = 6;
             long penetrazioneArmatura = 2;
@@ -388,7 +388,7 @@ public class DifesaService {
             costiMissileCalore.put(RisorseEnum.CIVILI, 10.1);
             costiMissileCalore.put(RisorseEnum.BITCOIN, 300.9);
 
-            int livelloFabbricaRequisito = 33;
+            int livelloFabbricaRequisito = 35;
 
             long danno = 50;
             long penetrazioneArmatura = 25;
@@ -430,7 +430,7 @@ public class DifesaService {
             costiRadio.put(RisorseEnum.CIVILI, 10.1);
             costiRadio.put(RisorseEnum.BITCOIN, 300.9);
 
-            int livelloFabbricaRequisito = 13;
+            int livelloFabbricaRequisito = 21;
 
             long danno = 5;
             long penetrazioneArmatura = 1;
@@ -465,6 +465,16 @@ public class DifesaService {
             PlayerDifesa playerDifesa = new PlayerDifesa();
             playerDifesa.setPlayer(user.getPlayer());
             playerDifesa.setDifesa(d);
+
+            playerDifesa.setLivelloFabbricaRequisito(d.getLivelloFabbricaRequisito());
+
+            playerDifesa.setDanno(d.getDanno());
+            playerDifesa.setPenetrazioneArmatura(d.getPenetrazioneArmatura());
+            playerDifesa.setVita(d.getVita());
+            playerDifesa.setArmatura(d.getArmatura());
+            playerDifesa.setNumeroMassimoDifesa(d.getNumeroMassimoDifesa());
+            playerDifesa.setNumeroMassimoObbiettivi(d.getNumeroMassimoObbiettivi());
+
             playerDifesaRepository.save(playerDifesa);
         }
     }
@@ -483,6 +493,7 @@ public class DifesaService {
             b.setNome(building.getNome());
             b.setLivello(building.getLivello());
             b.setUrlImg(building.getUrl());
+            b.setRequisito(building.getRequisito());
             basicBuildingsInfo.add(b);
         });
         return new ResponseEntity<>(basicBuildingsInfo, HttpStatus.OK);
@@ -494,6 +505,14 @@ public class DifesaService {
 
         int livelloDifesa;
         Long playerId = jwtUserUtils.getUserFromAuthorizationToken(bearerToken).getPlayer().getId();
+
+        Optional<PlayerDifesa> pd = playerDifesaRepository.findPlayerDifesaByPlayerIdAndDifesaId(playerId, difesaId);
+        PlayerDifesa playerDifesa;
+        if (pd.isPresent()) {
+            playerDifesa  = pd.get();
+        } else {
+            throw new RuntimeException("Player non presente");
+        }
 
         Optional<Difesa> sviluppoDifesaOptional = difesaRepository.getDifesaById(difesaId);
         Difesa sviluppoDifesa;
@@ -515,12 +534,12 @@ public class DifesaService {
             sviluppoDifesaDettagliDto.setUrlImmagine(sviluppoDifesa.getUrlImmagine());
             sviluppoDifesaDettagliDto.setLivelloFabbricaRequisito(sviluppoDifesa.getLivelloFabbricaRequisito());
 
-            sviluppoDifesaDettagliDto.setDanno(sviluppoDifesa.getDanno());
-            sviluppoDifesaDettagliDto.setPenetrazioneArmatura(sviluppoDifesa.getPenetrazioneArmatura());
-            sviluppoDifesaDettagliDto.setArmatura(sviluppoDifesa.getArmatura());
-            sviluppoDifesaDettagliDto.setVita(sviluppoDifesa.getVita());
-            sviluppoDifesaDettagliDto.setNumeroMassimoObbiettivi(sviluppoDifesa.getNumeroMassimoObbiettivi());
-            sviluppoDifesaDettagliDto.setNumeroMassimoDifesa(sviluppoDifesa.getNumeroMassimoDifesa());
+            sviluppoDifesaDettagliDto.setDanno(playerDifesa.getDanno());
+            sviluppoDifesaDettagliDto.setPenetrazioneArmatura(playerDifesa.getPenetrazioneArmatura());
+            sviluppoDifesaDettagliDto.setArmatura(playerDifesa.getArmatura());
+            sviluppoDifesaDettagliDto.setVita(playerDifesa.getVita());
+            sviluppoDifesaDettagliDto.setNumeroMassimoObbiettivi(playerDifesa.getNumeroMassimoObbiettivi());
+            sviluppoDifesaDettagliDto.setNumeroMassimoDifesa(playerDifesa.getNumeroMassimoDifesa());
 
             sviluppoDifesaDettagliDto.setDannoNextLvl(sviluppoDifesa.getDannoNextLvl());
             sviluppoDifesaDettagliDto.setPenetrazioneArmaturaNextLvl(sviluppoDifesa.getPenetrazioneArmaturaNextLvl());

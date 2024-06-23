@@ -2,6 +2,7 @@ package com.giancotsu.owar.service.player;
 
 import com.giancotsu.owar.dto.AllBasicBuildingsInfoDto;
 import com.giancotsu.owar.dto.SviluppoTecnologiaDettagliDto;
+import com.giancotsu.owar.entity.player.PlayerArsenale;
 import com.giancotsu.owar.entity.player.PlayerTecnologia;
 import com.giancotsu.owar.entity.player.sviluppo.Tecnologia;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
@@ -149,9 +150,10 @@ public class TecnologiaService {
             PlayerTecnologia playerTecnologia = new PlayerTecnologia();
             playerTecnologia.setPlayer(user.getPlayer());
             playerTecnologia.setTecnologia(t);
-            playerTecnologiaRepository.save(playerTecnologia);
 
-            //System.err.println("sto salvando tecnologia: " + t.getNome() + "al player: " + user.getPlayer().getBasicInformation().getNickname());
+            playerTecnologia.setLivelloLaboratorioRequisito(t.getLivelloLaboratorioRequisito());
+
+            playerTecnologiaRepository.save(playerTecnologia);
         }
     }
 
@@ -169,6 +171,9 @@ public class TecnologiaService {
             b.setNome(building.getNome());
             b.setLivello(building.getLivello());
             b.setUrlImg(building.getUrl());
+
+            b.setRequisito(building.getRequisito());
+
             basicBuildingsInfo.add(b);
         });
         return new ResponseEntity<>(basicBuildingsInfo, HttpStatus.OK);
@@ -180,6 +185,16 @@ public class TecnologiaService {
 
         int livelloTech;
         Long playerId = jwtUserUtils.getUserFromAuthorizationToken(bearerToken).getPlayer().getId();
+
+        /*
+        Optional<PlayerTecnologia> pt = playerTecnologiaRepository.findPlayerTecnologiaByPlayerIdAndTecnologiaId(playerId, techId);
+        PlayerTecnologia playerTecnologia;
+        if (pt.isPresent()) {
+            playerTecnologia  = pt.get();
+        } else {
+            throw new RuntimeException("Player non presente");
+        }
+         */
 
         Optional<Tecnologia> sviluppoTechOptional = tecnologiaRepository.getTecnologiaById(techId);
         Tecnologia sviluppoTech;

@@ -3,6 +3,7 @@ package com.giancotsu.owar.service.player;
 import com.giancotsu.owar.dto.AllBasicBuildingsInfoDto;
 import com.giancotsu.owar.dto.SviluppoArsenaleDettagliDto;
 import com.giancotsu.owar.entity.player.PlayerArsenale;
+import com.giancotsu.owar.entity.player.PlayerDifesa;
 import com.giancotsu.owar.entity.player.sviluppo.Arsenale;
 import com.giancotsu.owar.entity.risorse.RisorseEnum;
 import com.giancotsu.owar.entity.user.UserEntity;
@@ -854,6 +855,18 @@ public class ArsenaleService {
             PlayerArsenale playerArsenale = new PlayerArsenale();
             playerArsenale.setPlayer(user.getPlayer());
             playerArsenale.setArsenale(t);
+
+            playerArsenale.setLivelloFabbricaRequisito(t.getLivelloFabbricaRequisito());
+
+            playerArsenale.setAttacco(t.getAttacco());
+            playerArsenale.setArmatura(t.getArmatura());
+            playerArsenale.setVita(t.getVita());
+            playerArsenale.setVelocita(t.getVelocita());
+            playerArsenale.setStiva(t.getStiva());
+            playerArsenale.setConsumo(t.getConsumo());
+            playerArsenale.setNumeroMassimoObbiettivi(t.getNumeroMassimoObbiettivi());
+            playerArsenale.setNumeroMassimoArma(t.getNumeroMassimoArma());
+
             playerArsenaleRepository.save(playerArsenale);
         }
     }
@@ -872,6 +885,7 @@ public class ArsenaleService {
             b.setNome(building.getNome());
             b.setLivello(building.getLivello());
             b.setUrlImg(building.getUrl());
+            b.setRequisito(building.getRequisito());
             basicBuildingsInfo.add(b);
         });
         return new ResponseEntity<>(basicBuildingsInfo, HttpStatus.OK);
@@ -883,6 +897,14 @@ public class ArsenaleService {
 
         int livelloArsenale;
         Long playerId = jwtUserUtils.getUserFromAuthorizationToken(bearerToken).getPlayer().getId();
+
+        Optional<PlayerArsenale> pa = playerArsenaleRepository.findPlayerArsenaleByPlayerIdAndArsenaleId(playerId, arsenaleId);
+        PlayerArsenale playerArsenale;
+        if (pa.isPresent()) {
+            playerArsenale  = pa.get();
+        } else {
+            throw new RuntimeException("Player non presente");
+        }
 
         Optional<Arsenale> sviluppoArsenaleOptional = arsenaleRepository.getArsenaleById(arsenaleId);
         Arsenale sviluppoArsenale;
@@ -904,14 +926,14 @@ public class ArsenaleService {
             sviluppoArsenaleDettagliDto.setUrlImmagine(sviluppoArsenale.getUrlImmagine());
             sviluppoArsenaleDettagliDto.setLivelloFabbricaRequisito(sviluppoArsenale.getLivelloFabbricaRequisito());
 
-            sviluppoArsenaleDettagliDto.setAttacco(sviluppoArsenale.getAttacco());
-            sviluppoArsenaleDettagliDto.setArmatura(sviluppoArsenale.getArmatura());
-            sviluppoArsenaleDettagliDto.setVita(sviluppoArsenale.getVita());
-            sviluppoArsenaleDettagliDto.setVelocita(sviluppoArsenale.getVelocita());
-            sviluppoArsenaleDettagliDto.setStiva(sviluppoArsenale.getStiva());
-            sviluppoArsenaleDettagliDto.setConsumo(sviluppoArsenale.getConsumo());
-            sviluppoArsenaleDettagliDto.setNumeroMassimoObbiettivi(sviluppoArsenale.getNumeroMassimoObbiettivi());
-            sviluppoArsenaleDettagliDto.setNumeroMassimoArma(sviluppoArsenale.getNumeroMassimoArma());
+            sviluppoArsenaleDettagliDto.setAttacco(playerArsenale.getAttacco());
+            sviluppoArsenaleDettagliDto.setArmatura(playerArsenale.getArmatura());
+            sviluppoArsenaleDettagliDto.setVita(playerArsenale.getVita());
+            sviluppoArsenaleDettagliDto.setVelocita(playerArsenale.getVelocita());
+            sviluppoArsenaleDettagliDto.setStiva(playerArsenale.getStiva());
+            sviluppoArsenaleDettagliDto.setConsumo(playerArsenale.getConsumo());
+            sviluppoArsenaleDettagliDto.setNumeroMassimoObbiettivi(playerArsenale.getNumeroMassimoObbiettivi());
+            sviluppoArsenaleDettagliDto.setNumeroMassimoArma(playerArsenale.getNumeroMassimoArma());
 
             sviluppoArsenaleDettagliDto.setAttaccoNextLvl(sviluppoArsenale.getAttaccoNextLvl());
             sviluppoArsenaleDettagliDto.setArmaturaNextLvl(sviluppoArsenale.getArmaturaNextLvl());

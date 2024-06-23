@@ -11,8 +11,10 @@ import java.util.Optional;
 
 public interface PlayerTecnologiaRepository extends JpaRepository<PlayerTecnologia, Long> {
 
+    Optional<PlayerTecnologia> findPlayerTecnologiaByPlayerIdAndTecnologiaId(Long playerId, Long tecnologiaId);
+
     @Query(value = """
-            SELECT sa.id, pt.livello, sa.nome, sa.url_immagine AS url
+            SELECT sa.id, pt.livello, sa.nome, sa.url_immagine AS url, pt.livello_laboratorio_requisito AS requisito
             FROM player_tecnologia AS pt
             INNER JOIN sviluppo_astratto AS sa
             ON sa.id = pt.tecnologia_id AND pt.player_id = :playerId AND sa.dtype LIKE 'Tecnologia'

@@ -19,6 +19,17 @@ public class PlayerArsenale {
 
     private Integer livello = 0;
 
+    private int livelloFabbricaRequisito;
+
+    private long attacco;
+    private long armatura;
+    private long vita;
+    private long velocita;
+    private long stiva;
+    private long consumo;
+    private long numeroMassimoObbiettivi;
+    private long numeroMassimoArma;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_id")
     @JsonIgnore

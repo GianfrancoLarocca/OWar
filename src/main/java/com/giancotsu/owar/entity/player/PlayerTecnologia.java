@@ -20,6 +20,8 @@ public class PlayerTecnologia {
 
     private Integer livello = 0;
 
+    private Integer livelloLaboratorioRequisito;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_id")
     @JsonIgnore

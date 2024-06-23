@@ -6,4 +6,6 @@ public interface BasicBuildingInfoProjection {
     Integer getLivello();
     String getNome();
     String getUrl();
+
+    Integer getRequisito();
 }
