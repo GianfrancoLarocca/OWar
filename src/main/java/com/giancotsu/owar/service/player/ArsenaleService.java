@@ -48,7 +48,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalPistola = arsenaleRepository.findByNome(nome1);
         Map<RisorseEnum, Double> costiPistola = new HashMap<>();
         if(optionalPistola.isEmpty()) {
-            String descrizione = String.format("La %s è una pistola semi-automatica di ultima generazione, progettata per offrire prestazioni eccellenti in situazioni di alta pressione. Costruita con materiali leggeri e resistenti, la P070 è la scelta ideale per chi cerca affidabilità e precisione sul campo.", nome1);
+
+            String descrizione = String.format("La %s è una pistola semi-automatica di ultima generazione, progettata per offrire prestazioni eccellenti in situazioni di alta pressione. " +
+                    "Costruita con materiali leggeri e resistenti, la P070 è la scelta ideale per chi cerca affidabilità e precisione sul campo.", nome1);
+
             costiPistola.put(RisorseEnum.MICROCHIP, 150.2);
             costiPistola.put(RisorseEnum.METALLO, 380.2);
             costiPistola.put(RisorseEnum.ENERGIA, 15.3);
@@ -90,7 +93,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalTT9000 = arsenaleRepository.findByNome(nome2);
         Map<RisorseEnum, Double> costiTT9000 = new HashMap<>();
         if(optionalTT9000.isEmpty()) {
-            String descrizione = String.format("La %s è una mitraglietta compatta e potente, progettata per offrire un'elevata cadenza di fuoco e precisione in ogni situazione. Costruita con materiali all'avanguardia, è la scelta ideale per operazioni tattiche e combattimenti ravvicinati.", nome2);
+
+            String descrizione = String.format("La %s è una mitraglietta compatta e potente, progettata per offrire un'elevata cadenza di fuoco e precisione in ogni situazione. " +
+                    "Costruita con materiali all'avanguardia, è la scelta ideale per operazioni tattiche e combattimenti ravvicinati.", nome2);
+
             costiTT9000.put(RisorseEnum.MICROCHIP, 170.1);
             costiTT9000.put(RisorseEnum.METALLO, 400.1);
             costiTT9000.put(RisorseEnum.ENERGIA, 15.5);
@@ -132,7 +138,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalS99K = arsenaleRepository.findByNome(nome3);
         Map<RisorseEnum, Double> costiS99K = new HashMap<>();
         if(optionalS99K.isEmpty()) {
-            String descrizione = String.format("L' %s è un fucile a pompa robusto e affidabile, progettato per offrire un'elevata potenza di fuoco e versatilità in ogni situazione. Ideale per operazioni tattiche, difesa personale e uso in ambienti ostili.", nome3);
+
+            String descrizione = String.format("L' %s è un fucile a pompa robusto e affidabile, progettato per offrire un'elevata potenza di fuoco e versatilità in ogni situazione. " +
+                    "Ideale per operazioni tattiche, difesa personale e uso in ambienti ostili.", nome3);
+
             costiS99K.put(RisorseEnum.MICROCHIP, 140.9);
             costiS99K.put(RisorseEnum.METALLO, 420.8);
             costiS99K.put(RisorseEnum.ENERGIA, 17.7);
@@ -174,7 +183,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalBR88EVO = arsenaleRepository.findByNome(nome4);
         Map<RisorseEnum, Double> costiBR88EVO = new HashMap<>();
         if(optionalBR88EVO.isEmpty()) {
-            String descrizione = String.format("Il %s è un fucile d'assalto avanzato, progettato per garantire precisione, potenza e affidabilità in ogni missione. Ideale per operazioni militari e tattiche, combina tecnologia moderna con una costruzione robusta.", nome4);
+
+            String descrizione = String.format("Il %s è un fucile d'assalto avanzato, progettato per garantire precisione, potenza e affidabilità in ogni missione. " +
+                    "Ideale per operazioni militari e tattiche, combina tecnologia moderna con una costruzione robusta.", nome4);
+
             costiBR88EVO.put(RisorseEnum.MICROCHIP, 199.9);
             costiBR88EVO.put(RisorseEnum.METALLO, 450.8);
             costiBR88EVO.put(RisorseEnum.ENERGIA, 20.8);
@@ -216,7 +228,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalAKK164 = arsenaleRepository.findByNome(nome5);
         Map<RisorseEnum, Double> costiAKK164 = new HashMap<>();
         if(optionalAKK164.isEmpty()) {
-            String descrizione = String.format("L' %s è un fucile d'assalto affidabile e potente, progettato per eccellere in condizioni di combattimento difficili. Questo fucile combina la tradizionale robustezza con le innovazioni moderne per garantire precisione e versatilità sul campo di battaglia.", nome5);
+
+            String descrizione = String.format("L' %s è un fucile d'assalto affidabile e potente, progettato per eccellere in condizioni di combattimento difficili. " +
+                    "Questo fucile combina la tradizionale robustezza con le innovazioni moderne per garantire precisione e versatilità sul campo di battaglia.", nome5);
+
             costiAKK164.put(RisorseEnum.MICROCHIP, 230.5);
             costiAKK164.put(RisorseEnum.METALLO, 455.2);
             costiAKK164.put(RisorseEnum.ENERGIA, 22.2);
@@ -258,7 +273,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalSP3R = arsenaleRepository.findByNome(nome6);
         Map<RisorseEnum, Double> costiSP3R = new HashMap<>();
         if(optionalSP3R.isEmpty()) {
-            String descrizione = String.format("L' %s è un fucile da cecchino, progettato per colpire bersagli a lunga distanza con letale accuratezza. Realizzato con materiali di alta qualità, offre stabilità e affidabilità in ogni tiro.", nome6);
+
+            String descrizione = String.format("L' %s è un fucile da cecchino, progettato per colpire bersagli a lunga distanza con letale accuratezza. " +
+                    "Realizzato con materiali di alta qualità, offre stabilità e affidabilità in ogni tiro.", nome6);
+
             costiSP3R.put(RisorseEnum.MICROCHIP, 250.9);
             costiSP3R.put(RisorseEnum.METALLO, 600.9);
             costiSP3R.put(RisorseEnum.ENERGIA, 25.9);
@@ -300,7 +318,9 @@ public class ArsenaleService {
         Optional<Arsenale> optionalGranata = arsenaleRepository.findByNome(nome7);
         Map<RisorseEnum, Double> costiGranata = new HashMap<>();
         if(optionalGranata.isEmpty()) {
+
             String descrizione = String.format("La %s è un esplosivo di piccole dimensioni ma di gran impatto, molto utile per indebolire le difese leggere avversarie.", nome7);
+
             costiGranata.put(RisorseEnum.MICROCHIP, 100.2);
             costiGranata.put(RisorseEnum.METALLO, 415.2);
             costiGranata.put(RisorseEnum.ENERGIA, 20.3);
@@ -342,7 +362,9 @@ public class ArsenaleService {
         Optional<Arsenale> optionalDrone = arsenaleRepository.findByNome(nome8);
         Map<RisorseEnum, Double> costiDrone = new HashMap<>();
         if(optionalDrone.isEmpty()) {
+
             String descrizione = String.format("Il %s è un drone di medie dimensioni, che viene telecomandato e fatto esplodere in prossimità dell'obbiettivo. Molto utile contro le medio-piccole difese.", nome8);
+
             costiDrone.put(RisorseEnum.MICROCHIP, 300.9);
             costiDrone.put(RisorseEnum.METALLO, 130.9);
             costiDrone.put(RisorseEnum.ENERGIA, 30.9);
@@ -384,7 +406,9 @@ public class ArsenaleService {
         Optional<Arsenale> optionalMissili = arsenaleRepository.findByNome(nome9);
         Map<RisorseEnum, Double> costiMissili = new HashMap<>();
         if(optionalMissili.isEmpty()) {
+
             String descrizione = String.format("Il %s è in grado di lanciare missili ad elevata velocità e ad alto potenziale esplosivo contro bersagli a lunga gittata. Utilissimo contro difese o veicoli pesanti.", nome9);
+
             costiMissili.put(RisorseEnum.MICROCHIP, 450.9);
             costiMissili.put(RisorseEnum.METALLO, 300.9);
             costiMissili.put(RisorseEnum.ENERGIA, 50.9);
@@ -426,7 +450,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalMoody = arsenaleRepository.findByNome(nome10);
         Map<RisorseEnum, Double> costiMoody = new HashMap<>();
         if(optionalMoody.isEmpty()) {
-            String descrizione = String.format("L'%s è un elicottero da guerra ormai deprecato, fù progettato per operazioni di combattimento in prima linea. Con la sua tecnologia obsoleta e la incapacità di eseguire missioni complesse, l'%s è un potente strumento per far da scudo ad altri elicotteri più moderni e potenti.", nome10, nome10);
+
+            String descrizione = String.format("L'%s è un elicottero da guerra ormai deprecato, fù progettato per operazioni di combattimento in prima linea. " +
+                    "Con la sua tecnologia obsoleta e la incapacità di eseguire missioni complesse, l'%s è un potente strumento per far da scudo ad altri elicotteri più moderni e potenti.", nome10, nome10);
+
             costiMoody.put(RisorseEnum.MICROCHIP, 300.9);
             costiMoody.put(RisorseEnum.METALLO, 800.9);
             costiMoody.put(RisorseEnum.ENERGIA, 50.9);
@@ -468,7 +495,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalDoody = arsenaleRepository.findByNome(nome11);
         Map<RisorseEnum, Double> costiDoody = new HashMap<>();
         if(optionalDoody.isEmpty()) {
-            String descrizione = String.format("L'%s è un elicottero rimodernizzato che prende ispirazione dal vecchio elicottero degli anni '80 \"Aer D-00DY 1980\". Questo nuovo elicottero è dotato di tecnologie moderne e, grazie alle sue piccole dimensioni, è estremamente rapido. L'%s si è affermato sul mercato come il migliore per qualità/prezzo.", nome11, nome11);
+
+            String descrizione = String.format("L'%s è un elicottero rimodernizzato che prende ispirazione dal vecchio elicottero degli anni '80 \"Aer D-00DY 1980\". " +
+                    "Questo nuovo elicottero è dotato di tecnologie moderne e, grazie alle sue piccole dimensioni, è estremamente rapido. L'%s si è affermato sul mercato come il migliore per qualità/prezzo.", nome11, nome11);
+
             costiDoody.put(RisorseEnum.MICROCHIP, 320.9);
             costiDoody.put(RisorseEnum.METALLO, 850.9);
             costiDoody.put(RisorseEnum.ENERGIA, 65.9);
@@ -510,7 +540,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalZanq = arsenaleRepository.findByNome(nome13);
         Map<RisorseEnum, Double> costiZanq = new HashMap<>();
         if(optionalZanq.isEmpty()) {
-            String descrizione = String.format("L'%s è conosciuto da tutto il mondo come l'elicottero più potente di tutti. Questo elicottero porta con se un motore super performante, delle pale enormi, e un arsenale distruttivo. L'unico lato negativo è il suo costo spropositato.", nome13);
+
+            String descrizione = String.format("L'%s è conosciuto da tutto il mondo come l'elicottero più potente di tutti. " +
+                    "Questo elicottero porta con se un motore super performante, delle pale enormi, e un arsenale distruttivo. L'unico lato negativo è il suo costo spropositato.", nome13);
+
             costiZanq.put(RisorseEnum.MICROCHIP, 500.9);
             costiZanq.put(RisorseEnum.METALLO, 1000.9);
             costiZanq.put(RisorseEnum.ENERGIA, 100.9);
@@ -552,7 +585,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalDodo = arsenaleRepository.findByNome(nome14);
         Map<RisorseEnum, Double> costiDodo = new HashMap<>();
         if(optionalDodo.isEmpty()) {
-            String descrizione = String.format("Il %s è un potentissimo bombardiere capace di annientare un intero campo di battaglia. Il suo grande svantaggio è la lentezza, che lo rende un facile bersaglio.", nome14);
+
+            String descrizione = String.format("Il %s è un potentissimo bombardiere capace di annientare un intero campo di battaglia. " +
+                    "Il suo grande svantaggio è la lentezza, che lo rende un facile bersaglio.", nome14);
+
             costiDodo.put(RisorseEnum.MICROCHIP, 650.9);
             costiDodo.put(RisorseEnum.METALLO, 1200.9);
             costiDodo.put(RisorseEnum.ENERGIA, 128.9);
@@ -594,7 +630,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalIcio = arsenaleRepository.findByNome(nome15);
         Map<RisorseEnum, Double> costiIcio = new HashMap<>();
         if(optionalIcio.isEmpty()) {
-            String descrizione = String.format("L'%s è un aereo da caccia che, nonostante sia datato, rimane comunque affidabile e svolge bene il proprio lavoro. Fu progettato per eccellere nei combattimenti aerei e nelle missioni di superiorità aerea. Il suo grande pregio è il costo decisamente inferiore rispetto al suo successore.", nome15);
+
+            String descrizione = String.format("L'%s è un aereo da caccia che, nonostante sia datato, rimane comunque affidabile e svolge bene il proprio lavoro. " +
+                    "Fu progettato per eccellere nei combattimenti aerei e nelle missioni di superiorità aerea. Il suo grande pregio è il costo decisamente inferiore rispetto al suo successore.", nome15);
+
             costiIcio.put(RisorseEnum.MICROCHIP, 800.9);
             costiIcio.put(RisorseEnum.METALLO, 1450.9);
             costiIcio.put(RisorseEnum.ENERGIA, 150.9);
@@ -636,7 +675,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalManu = arsenaleRepository.findByNome(nome16);
         Map<RisorseEnum, Double> costiManu = new HashMap<>();
         if(optionalManu.isEmpty()) {
-            String descrizione = String.format("Il %s è un aereo da caccia di ultima generazione, progettato per dominare i cieli con una potenza e una precisione ineguagliabili. Equipaggiato con tecnologia stealth e armamenti avanzati, il JJ M4-NU è un formidabile avversario in qualsiasi teatro di guerra.", nome16);
+
+            String descrizione = String.format("Il %s è un aereo da caccia di ultima generazione, progettato per dominare i cieli con una potenza e una precisione ineguagliabili. " +
+                    "Equipaggiato con tecnologia stealth e armamenti avanzati, il JJ M4-NU è un formidabile avversario in qualsiasi teatro di guerra.", nome16);
+
             costiManu.put(RisorseEnum.MICROCHIP, 1450.9);
             costiManu.put(RisorseEnum.METALLO, 2300.9);
             costiManu.put(RisorseEnum.ENERGIA, 243.9);
@@ -678,7 +720,9 @@ public class ArsenaleService {
         Optional<Arsenale> optionalVirus = arsenaleRepository.findByNome(nome17);
         Map<RisorseEnum, Double> costiVirus = new HashMap<>();
         if(optionalVirus.isEmpty()) {
+
             String descrizione = String.format("Il %s è un software malevolo capace di prelevare ingenti somme di bitcoin dalle banche nemiche.", nome17);
+
             costiVirus.put(RisorseEnum.MICROCHIP, 300.9);
             costiVirus.put(RisorseEnum.METALLO, 150.9);
             costiVirus.put(RisorseEnum.ENERGIA, 35.9);
@@ -703,7 +747,7 @@ public class ArsenaleService {
             long stivaNextLvl = 0;
             long consumoNextLvl = 0;
             long numeroMassimoObbiettiviNextLvl = 1;
-            long numeroMassimoArmaNextLvl = 10;
+            long numeroMassimoArmaNextLvl = 2;
 
             Arsenale virus = new Arsenale(null, nome17, descrizione, "../../assets/img/sviluppo-arsenale/virus.png", 1.14, costiVirus, livelloFabbricaRequisito,
                     attacco, armatura, vita, velocita, stiva, consumo, numeroMassimoObbiettivi, numeroMassimoArma,
@@ -720,7 +764,9 @@ public class ArsenaleService {
         Optional<Arsenale> optionalCargo = arsenaleRepository.findByNome(nome18);
         Map<RisorseEnum, Double> costiCargo = new HashMap<>();
         if(optionalCargo.isEmpty()) {
+
             String descrizione = String.format("Il %s è un mezzo blindato dotato di una grande stiva, utilizzato in guerra per raccogliere tutto ciò che può essere saccheggiato.", nome18);
+
             costiCargo.put(RisorseEnum.MICROCHIP, 40.9);
             costiCargo.put(RisorseEnum.METALLO, 560.9);
             costiCargo.put(RisorseEnum.ENERGIA, 40.9);
@@ -736,7 +782,7 @@ public class ArsenaleService {
             long stiva = 500;
             long consumo = 80;
             long numeroMassimoObbiettivi = 1;
-            long numeroMassimoArma = 10;
+            long numeroMassimoArma = 1000;
 
             long attaccoNextLvl = 0;
             long armaturaNextLvl = 5;
@@ -745,7 +791,7 @@ public class ArsenaleService {
             long stivaNextLvl = 25;
             long consumoNextLvl = 10;
             long numeroMassimoObbiettiviNextLvl = 1;
-            long numeroMassimoArmaNextLvl = 10;
+            long numeroMassimoArmaNextLvl = 100;
 
             Arsenale cargo = new Arsenale(null, nome18, descrizione, "../../assets/img/sviluppo-arsenale/cargo.png", 1.14, costiCargo, livelloFabbricaRequisito,
                     attacco, armatura, vita, velocita, stiva, consumo, numeroMassimoObbiettivi, numeroMassimoArma,
@@ -762,7 +808,10 @@ public class ArsenaleService {
         Optional<Arsenale> optionalDroneSpia = arsenaleRepository.findByNome(nome19);
         Map<RisorseEnum, Double> costiDroneSpia = new HashMap<>();
         if(optionalDroneSpia.isEmpty()) {
-            String descrizione = String.format("Il %s è un drone super leggero in grado di volare ad alte quote e ad alte velocità. È munito di telecamere che lo rendono perfetto per il suo compito principale: carpire informazioni nemiche.", nome19);
+
+            String descrizione = String.format("Il %s è un drone super leggero in grado di volare ad alte quote e ad alte velocità. " +
+                    "È munito di telecamere che lo rendono perfetto per il suo compito principale: carpire informazioni nemiche.", nome19);
+
             costiDroneSpia.put(RisorseEnum.MICROCHIP, 300.9);
             costiDroneSpia.put(RisorseEnum.METALLO, 185.9);
             costiDroneSpia.put(RisorseEnum.ENERGIA, 28.9);
@@ -778,7 +827,7 @@ public class ArsenaleService {
             long stiva = 0;
             long consumo = 2;
             long numeroMassimoObbiettivi = 1;
-            long numeroMassimoArma = 10;
+            long numeroMassimoArma = 300;
 
             long attaccoNextLvl = 0;
             long armaturaNextLvl = 1;
@@ -786,8 +835,8 @@ public class ArsenaleService {
             long velocitaNextLvl = 7;
             long stivaNextLvl = 0;
             long consumoNextLvl = 2;
-            long numeroMassimoObbiettiviNextLvl = 1;
-            long numeroMassimoArmaNextLvl = 10;
+            long numeroMassimoObbiettiviNextLvl = 0;
+            long numeroMassimoArmaNextLvl = 5;
 
             Arsenale droneSpia = new Arsenale(null, nome19, descrizione, "../../assets/img/sviluppo-arsenale/spia.png", 1.14, costiDroneSpia, livelloFabbricaRequisito,
                     attacco, armatura, vita, velocita, stiva, consumo, numeroMassimoObbiettivi, numeroMassimoArma,

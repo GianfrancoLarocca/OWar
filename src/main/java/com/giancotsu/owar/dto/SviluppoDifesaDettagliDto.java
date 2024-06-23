@@ -28,20 +28,15 @@ public class SviluppoDifesaDettagliDto {
     private long penetrazioneArmatura;
     private long armatura;
     private long vita;
+    private long numeroMassimoObbiettivi;
+    private long numeroMassimoDifesa;
 
-    public SviluppoDifesaDettagliDto(String nome, String descrizione, Integer livello, String urlImmagine, Map<String, Double> costi, String chance, int livelloFabbricaRequisito, long danno, long penetrazioneArmatura, long armatura, long vita) {
-        this.nome = nome;
-        this.descrizione = descrizione;
-        this.livello = livello;
-        this.urlImmagine = urlImmagine;
-        this.costi = costi;
-        this.chance = chance;
-        this.livelloFabbricaRequisito = livelloFabbricaRequisito;
-        this.danno = danno;
-        this.penetrazioneArmatura = penetrazioneArmatura;
-        this.armatura = armatura;
-        this.vita = vita;
-    }
+    private long dannoNextLvl;
+    private long penetrazioneArmaturaNextLvl;
+    private long armaturaNextLvl;
+    private long vitaNextLvl;
+    private long numeroMassimoObbiettiviNextLvl;
+    private long numeroMassimoDifesaNextLvl;
 
     public Map<String, String> getCosti() {
         Map<String, String> newMap = new HashMap<>();
