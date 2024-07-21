@@ -44,6 +44,7 @@ public class AuthService {
     private final TecnologiaService tecnologiaService;
     private final ArsenaleService arsenaleService;
     private final DifesaService difesaService;
+    private final EsercitoService esercitoService;
     private final Validator validator;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -51,7 +52,7 @@ public class AuthService {
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, StruttureService struttureService, TecnologiaService tecnologiaService, ArsenaleService arsenaleService, DifesaService difesaService, Validator validator, ApplicationEventPublisher eventPublisher) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator tokenGenerator, EmailService emailService, PlayerSviluppoService playerSviluppoService, StruttureService struttureService, TecnologiaService tecnologiaService, ArsenaleService arsenaleService, DifesaService difesaService, EsercitoService esercitoService, Validator validator, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -63,6 +64,7 @@ public class AuthService {
         this.tecnologiaService = tecnologiaService;
         this.arsenaleService = arsenaleService;
         this.difesaService = difesaService;
+        this.esercitoService = esercitoService;
         this.validator = validator;
         this.eventPublisher = eventPublisher;
 
@@ -115,13 +117,13 @@ public class AuthService {
         PlayerEntity player = new PlayerEntity();
         player.setBasicInformation(new PlayerBasicInformationEntity(newUser.getUsername(), LocalDateTime.now()));
         newUser.setPlayer(player);
-        System.err.println(player);
         UserEntity savedUser = userRepository.save(newUser);
         playerSviluppoService.salvaSviluppo(savedUser);
         struttureService.salvaStrutture(savedUser);
         tecnologiaService.salvaTecnologie(savedUser);
         arsenaleService.salvaArsenale(savedUser);
         difesaService.salvaDifesa(savedUser);
+        esercitoService.salvaSoldati(savedUser);
 
         String activationUrl = "%s/activation/%s/%s".formatted(frontendUrl, newUser.getEmail(), newUser.getActivationCode());
         String emailBody = """                

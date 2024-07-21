@@ -2,6 +2,7 @@ package com.giancotsu.owar.entity.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -32,11 +33,11 @@ public class PlayerEntity {
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference
-    private PlayerRisorse playerRisorse;
+    private Contatori contatori;
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference
-    private Contatori contatori;
+    private PlayerRisorse playerRisorse;
 
     @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
     @JsonIgnore
@@ -52,7 +53,15 @@ public class PlayerEntity {
 
     @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
     @JsonIgnore
+    private List<Soldato> soldati;
+
+    @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
+    @JsonIgnore
     private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "player", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    private List<UnitaRimanentiCoda> unitaRimanentiCoda = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -78,6 +87,7 @@ public class PlayerEntity {
         } else {
             throw new RuntimeException("Non puoi aggiungere te stesso agli amici!");
         }
+
     }
 
     public void removeFriend(PlayerEntity friend) {

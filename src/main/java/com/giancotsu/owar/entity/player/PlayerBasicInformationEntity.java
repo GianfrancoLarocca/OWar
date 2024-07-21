@@ -28,7 +28,7 @@ public class PlayerBasicInformationEntity {
     private LocalDateTime dataRegistrazione;
 
     //EXP
-    //Exp(n) = Base * Math.pow(Fattore, livello - 1.0);
+    //Exp(n) = Base * Math.pow(Fattore, livello);
     private Double exp = 0.0;
     private Double expTot = 0.0;
     private Double expBase = 2000.5;
@@ -40,6 +40,10 @@ public class PlayerBasicInformationEntity {
     private long cp = 0;
     private long puntiAttacco = 0;
     private long puntiDifesa = 0;
+
+    //SLOT CODA
+    private int slotCodaEsercito = 3;
+    private int slotCodaDifesa = 3;
 
 
     public PlayerBasicInformationEntity(String nickname) {
@@ -162,5 +166,21 @@ public class PlayerBasicInformationEntity {
 
     public void setPuntiDifesa(long puntiDifesa) {
         this.puntiDifesa = puntiDifesa;
+    }
+
+    public int getSlotCodaEsercito() {
+        return slotCodaEsercito;
+    }
+
+    public void setSlotCodaEsercito(int slotCodaEsercito) {
+        this.slotCodaEsercito = slotCodaEsercito;
+    }
+
+    public int getSlotCodaDifesa() {
+        return slotCodaDifesa;
+    }
+
+    public void setSlotCodaDifesa(int slotCodaDifesa) {
+        this.slotCodaDifesa = slotCodaDifesa;
     }
 }

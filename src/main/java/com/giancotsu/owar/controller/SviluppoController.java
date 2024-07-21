@@ -38,7 +38,7 @@ public class SviluppoController {
     }
 
     @GetMapping(value = "strutture/id/{id}")
-    public ResponseEntity<SviluppoStrutturaCompletoDto> getSviluppoDettByName(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long idStruttura) {
+    public ResponseEntity<SviluppoStrutturaCompletoDto> getSviluppoDettById(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long idStruttura) {
         return this.struttureService.getSviluppoStrutturaDettById(idStruttura, bearerToken);
     }
 
@@ -65,7 +65,7 @@ public class SviluppoController {
     }
 
     @GetMapping(value = "tecnologia/id/{id}")
-    public ResponseEntity<SviluppoTecnologiaDettagliDto> getTechDettByName(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long idTech) {
+    public ResponseEntity<SviluppoTecnologiaDettagliDto> getTechDettById(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long idTech) {
         return this.tecnologiaService.getSviluppoStrutturaDettById(idTech, bearerToken);
     }
 
@@ -97,7 +97,7 @@ public class SviluppoController {
     }
 
     @GetMapping(value = "arsenale/id/{id}")
-    public ResponseEntity<SviluppoArsenaleDettagliDto> getArsenaleDettByName(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long arsenaleId) {
+    public ResponseEntity<SviluppoArsenaleDettagliDto> getArsenaleDettById(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long arsenaleId) {
         return this.arsenaleService.getSviluppoArsenaleDettById(arsenaleId, bearerToken);
     }
 
@@ -130,7 +130,7 @@ public class SviluppoController {
     }
 
     @GetMapping(value = "difesa/id/{id}")
-    public ResponseEntity<SviluppoDifesaDettagliDto> getDifesaDettByName(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long difesaId) {
+    public ResponseEntity<SviluppoDifesaDettagliDto> getDifesaDettById(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") Long difesaId) {
         return this.difesaService.getSviluppoDifesaDettById(difesaId, bearerToken);
     }
 
